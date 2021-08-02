@@ -1,0 +1,103 @@
+---
+title: "Jack's Working Patterns"
+author: "Jumping Rivers Ltd"
+date: "`r format(Sys.Date(), '%b %d %Y')`"
+output: jrIdentity::readthedown
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+## By default reticulate creates virtualenvs in ~/.virtualenv
+## To change where the virtualenv is created we have to use
+## the WORKON_HOME environment variable
+Sys.setenv(WORKON_HOME = ".")
+
+## Create the virtualenv
+reticulate::virtualenv_install(
+  envname = "venv",
+  python = Sys.which("python3.8"),
+  packages = c("google", "gcsa", "pandas", "matplotlib")
+)
+
+## Activate the virtualenv
+reticulate::use_virtualenv("./venv")
+Sys.setenv("RETICULATE_PYTHON" = file.path("./venv", "bin", "python"))
+```
+
+```{python imports, echo=FALSE}
+from datetime import date, timedelta
+from google.oauth2.credentials import Credentials
+from gcsa.google_calendar import GoogleCalendar
+import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
+import os
+import pandas as pd
+```
+
+```{python python-backend, echo=FALSE}
+class GCalClocked():
+
+    def __init__(self):
+        self.creds = self.__get_creds()
+        self.end = date.today()
+        self.start = self.end - timedelta(days=90)
+        self.events = self.__get_clock_df()
+        self.status = f"Clocked {'On' if self.events.iloc[-1]['on_event'] else 'Off'}"
+
+    def __get_creds(self):
+        return Credentials(token=os.environ["TOKEN"],
+                           refresh_token=os.environ["REFRESH_TOKEN"],
+                           client_id=os.environ["ID"],
+                           client_secret=os.environ["SECRET"],
+                           token_uri="https://oauth2.googleapis.com/token")
+
+    def __get_clock_events(self):
+        calendar = GoogleCalendar(credentials=self.creds)
+        return calendar.get_events(time_min=self.start,
+                                   time_max=self.end,
+                                   query="clocked")
+
+    def __get_clock_df(self):
+        return pd.DataFrame([{"time": event.start,
+                              "on_event": "on" in event.summary.lower(),
+                              "off_event": "off" in event.summary.lower()}
+                             for event in self.__get_clock_events()])
+
+    def compute_time(self):
+        # Groupby clock on / off data by day
+        groupby = self.events.groupby([self.events["time"].dt.date])
+        # Compute length of each day
+        df = groupby.diff().dropna().reset_index(drop=True)
+ 
+        # Only include measurements which have a clock on and off event
+        df = df.loc[df["on_event"] & df["off_event"]].drop(["on_event", "off_event"], axis=1)
+ 
+        # Compute number of hours worked
+        df["hours_worked"] = df.time.dt.seconds / (60 ** 2)
+    
+        return df
+
+    def tabulate_summary(self):
+        print(self.compute_time()["hours_worked"].describe().to_frame().to_html())
+
+    def plot_days(self):
+        df = self.compute_time()
+        ax = df["hours_worked"].plot(kind="hist", style="seaborn")
+        ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+        ax.set_xlabel("Hours worked")
+        ax.set_ylabel("Frequency")
+```
+
+```{python echo=FALSE}
+plt.style.use("ggplot")
+data = GCalClocked()
+```
+
+```{python echo=FALSE, results='asis'}
+print(f"Current Status: {data.status}")
+```
+
+```{python echo=FALSE, results='asis'}
+data.tabulate_summary()
+```

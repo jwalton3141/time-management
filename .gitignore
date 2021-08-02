@@ -1,0 +1,6 @@
+venv
+*.html
+report_files
+.Renviron
+.Rproj.user
+.Rhistory
