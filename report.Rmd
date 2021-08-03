@@ -43,9 +43,10 @@ class GCalClocked():
         self.end = date.today()
         self.start = self.end - timedelta(days=90)
         self.events = self.__get_clock_df()
-        self.status = f"Clocked {'On' if self.events.iloc[-1]['on_event'] else 'Off'}"
+        self.status = "Clocked On" if self.events.iloc[-1]["clocked_off"] is None else "Clocked Off"
 
     def __get_creds(self):
+        """Fetch credentials from env to authenticate against calendar."""
         return Credentials(token=os.environ["TOKEN"],
                            refresh_token=os.environ["REFRESH_TOKEN"],
                            client_id=os.environ["ID"],
@@ -53,37 +54,45 @@ class GCalClocked():
                            token_uri="https://oauth2.googleapis.com/token")
 
     def __get_clock_events(self):
+        """Fetch calendar events with 'clocked' in title."""
         calendar = GoogleCalendar(credentials=self.creds)
         return calendar.get_events(time_min=self.start,
                                    time_max=self.end,
                                    query="clocked")
 
     def __get_clock_df(self):
-        return pd.DataFrame([{"time": event.start,
-                              "on_event": "on" in event.summary.lower(),
-                              "off_event": "off" in event.summary.lower()}
-                             for event in self.__get_clock_events()])
+        """Construct pandas DataFrame of clock on / clock off events."""
+        # Create DataFrame from gcsa events
+        events = pd.DataFrame([{"time": event.start,
+                                "event": event.summary}
+                              for event in self.__get_clock_events()])
 
-    def compute_time(self):
-        # Groupby clock on / off data by day
-        groupby = self.events.groupby([self.events["time"].dt.date])
-        # Compute length of each day
-        df = groupby.diff().dropna().reset_index(drop=True)
- 
-        # Only include measurements which have a clock on and off event
-        df = df.loc[df["on_event"] & df["off_event"]].drop(["on_event", "off_event"], axis=1)
- 
-        # Compute number of hours worked
-        df["hours_worked"] = df.time.dt.seconds / (60 ** 2)
-    
+        # Preallocate dataframe for transformed data
+        df = pd.DataFrame({"clocked_on": None,
+                           "clocked_off": None},
+                           index=events["time"].dt.date.unique())
+
+        # Loop over entries and add to correct position in transformed df
+        for i, row in events.iterrows():
+            clock_type = "clocked_on" if "on" in row["event"].lower() else "clocked_off"
+            df.loc[row["time"].date(), clock_type] = row["time"].time()
+
+        # Compute hours worked from clocked on and clocked off data
+        df["hours_worked"] = (
+            pd.to_datetime(df["clocked_off"].dropna().astype(str), format='%H:%M:%S')
+            - pd.to_datetime(df["clocked_on"].dropna().astype(str), format='%H:%M:%S')
+        ).dt.seconds / (60 ** 2)
+
         return df
 
-    def tabulate_summary(self):
-        print(self.compute_time()["hours_worked"].describe().to_frame().to_html())
+    def get_last_days(self, last_days=90):
+        return self.events.dropna().iloc[-last_days:]
 
-    def plot_days(self):
-        df = self.compute_time()
-        ax = df["hours_worked"].plot(kind="hist", style="seaborn")
+    def tabulate_summary(self, days=90):
+        print(self.get_last_days(days)["hours_worked"].describe().to_frame().to_html())
+
+    def plot_days(self, days=90):
+        ax = self.get_last_days(days)["hours_worked"].plot(kind="hist")
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))
         ax.set_xlabel("Hours worked")
         ax.set_ylabel("Frequency")
@@ -98,6 +107,26 @@ data = GCalClocked()
 print(f"Current Status: {data.status}")
 ```
 
+## Last 5 days
+
 ```{python echo=FALSE, results='asis'}
-data.tabulate_summary()
+days = 5
+data.tabulate_summary(days)
+data.plot_days(days)
+```
+
+## Last 30 days
+
+```{python echo=FALSE, results='asis'}
+days = 30
+data.tabulate_summary(days)
+data.plot_days(days)
+```
+
+## Last 90 days
+
+```{python echo=FALSE, results='asis'}
+days = 90
+data.tabulate_summary(days)
+data.plot_days(days)
 ```
