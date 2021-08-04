@@ -134,7 +134,6 @@ print(f"### Total Hours Worked: {summary['sum']} Hours")
 print(f"### Average Working Day: {summary['mean']} Hours")
 print(f"### Shortest Working Day: {summary['min']} Hours")
 print(f"### Longest Working Day: {summary['max']} Hours")
-data.plot_days(days)
 ```
 
 ```{python echo=FALSE}
@@ -151,8 +150,6 @@ print(f"### Total Hours Worked: {summary['sum']} Hours")
 print(f"### Average Working Day: {summary['mean']} Hours")
 print(f"### Shortest Working Day: {summary['min']} Hours")
 print(f"### Longest Working Day: {summary['max']} Hours")
-data.plot_days(days)
-data.plot_days(days)
 ```
 
 ```{python echo=FALSE}
