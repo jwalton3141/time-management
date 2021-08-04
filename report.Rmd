@@ -1,6 +1,6 @@
 ---
-title: "Jack's Working Patterns"
-author: "Jumping Rivers Ltd"
+title: "Jack's Timesheet"
+author: "Bundy Manufacturing Company"
 date: "`r format(Sys.Date(), '%b %d %Y')`"
 output: jrIdentity::readthedown
 ---
@@ -17,7 +17,11 @@ Sys.setenv(WORKON_HOME = ".")
 reticulate::virtualenv_install(
   envname = "venv",
   python = Sys.which("python3.8"),
-  packages = c("google", "gcsa", "pandas", "matplotlib", "numpy")
+  packages = c("gcsa",
+               "google",
+               "matplotlib",
+               "numpy",
+               "pandas")
 )
 
 ## Activate the virtualenv
@@ -27,8 +31,8 @@ Sys.setenv("RETICULATE_PYTHON" = file.path("./venv", "bin", "python"))
 
 ```{python imports, echo=FALSE}
 from datetime import date, timedelta
-from google.oauth2.credentials import Credentials
 from gcsa.google_calendar import GoogleCalendar
+from google.oauth2.credentials import Credentials
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 import numpy as np
@@ -37,107 +41,109 @@ import pandas as pd
 ```
 
 ```{python python-backend, echo=FALSE}
-class GCalClocked():
+class Timesheet():
 
-    def __init__(self):
-        self.creds = self.__get_creds()
+    def __init__(self, days=90):
+        self.__gcal_credentials__ = self.__get_gcal_credentials__()
         self.end = date.today()
-        self.start = self.end - timedelta(days=90)
-        self.events = self.__get_clock_df()
-        self.status = "Clocked On" if self.events.iloc[-1]["clocked_off"] is None else "Clocked Off"
+        self.start = self.end - timedelta(days=days)
+        self.data = self.__get_timesheet__()
+        self.status = f"Clocked {'On' if self.data.iloc[-1]['clocked_off'] is None else 'Off'}"
 
-    def __get_creds(self):
+    def __get_gcal_credentials__(self):
         """Fetch credentials from env to authenticate against calendar."""
         return Credentials(token=os.environ["TOKEN"],
                            refresh_token=os.environ["REFRESH_TOKEN"],
-                           client_id=os.environ["ID"],
-                           client_secret=os.environ["SECRET"],
+                           client_id=os.environ["CLIENT_ID"],
+                           client_secret=os.environ["CLIENT_SECRET"],
                            token_uri="https://oauth2.googleapis.com/token")
 
-    def __get_clock_events(self):
+    def __get_timecards__(self):
         """Fetch calendar events with 'clocked' in title."""
-        calendar = GoogleCalendar(credentials=self.creds)
+        calendar = GoogleCalendar(credentials=self.__gcal_credentials__)
         return calendar.get_events(time_min=self.start,
                                    time_max=self.end,
                                    query="clocked")
 
-    def __get_clock_df(self):
+    def __get_timesheet__(self):
         """Construct pandas DataFrame of clock on / clock off events."""
         # Create DataFrame from gcsa events
-        events = pd.DataFrame([{"time": event.start,
-                                "event": event.summary}
-                              for event in self.__get_clock_events()])
+        cards = pd.DataFrame([{"time": timecard.start,
+                               "event": timecard.summary}
+                              for timecard in self.__get_timecards__()])
 
         # Preallocate dataframe for transformed data
-        df = pd.DataFrame({"clocked_on": None,
-                           "clocked_off": None},
-                           index=events["time"].dt.date.unique())
+        sheet = pd.DataFrame({"clocked_on": None,
+                              "clocked_off": None},
+                              index=cards["time"].dt.date.unique())
 
-        # Loop over entries and add to correct position in transformed df
-        for i, row in events.iterrows():
-            clock_type = "clocked_on" if "on" in row["event"].lower() else "clocked_off"
-            df.loc[row["time"].date(), clock_type] = row["time"].time()
+        # Loop over cards and add to correct position in timesheet
+        for i, row in cards.iterrows():
+            event_type = "clocked_on" if "on" in row["event"].lower() else "clocked_off"
+            sheet.loc[row["time"].date(), event_type] = row["time"].time()
 
         # Compute hours worked from clocked on and clocked off data
-        df["hours_worked"] = (
-            pd.to_datetime(df["clocked_off"].dropna().astype(str), format='%H:%M:%S')
-            - pd.to_datetime(df["clocked_on"].dropna().astype(str), format='%H:%M:%S')
+        sheet["shift_length"] = (
+            pd.to_datetime(sheet["clocked_off"].dropna().astype(str), format='%H:%M:%S')
+            - pd.to_datetime(sheet["clocked_on"].dropna().astype(str), format='%H:%M:%S')
         ).dt.seconds / (60 ** 2)
 
-        return df
+        return sheet
 
-    def get_last_days(self, last_days=90):
-        return self.events.dropna().iloc[-last_days:]
+    def get_last_n_shifts(self, n=90):
+        return self.data.dropna().iloc[-n:]
 
-    def summary(self, days=90, dp=2, agg=None):
+    def summarise(self, n=90, dp=2, agg=None):
         if agg is None:
-            agg = {"sum": np.sum,
-                   "mean": np.mean,
-                   "min": np.min,
-                   "max": np.max}
-        return self.get_last_days(days)["hours_worked"].agg(agg).round(dp)
+            agg = {"Total Hours Worked": np.sum,
+                   "Average Working Day": np.mean,
+                   "Shortest Working Day": np.min,
+                   "Longest Working Day": np.max}
+        return self.get_last_n_shifts(n)["shift_length"].agg(agg).round(dp)
 
-    def plot_days(self, days=90):
-        ax = self.get_last_days(days)["hours_worked"].plot(kind="hist")
+    def hist(self, n=90):
+        ax = self.get_last_n_shifts(n)["shift_length"].plot(kind="hist")
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))
         ax.set_xlabel("Hours worked")
         ax.set_ylabel("Frequency")
         return ax.get_figure(), ax
+
+    def time_series(self, n=90):
+        pass
+
+    def boxplot(self, n=90):
+        pass
 ```
 
 ```{python echo=FALSE}
 plt.style.use("ggplot")
-data = GCalClocked()
+sheet = Timesheet()
 ```
 
 ```{python echo=FALSE, results='asis'}
-print(f"Current Status: {data.status}")
+print(f"Current Status: {sheet.status}")
 ```
 
 ## Last 5 days
 
 ```{python echo=FALSE, results='asis'}
 days = 5
-summary = data.summary(days)
-print(f"### Total Hours Worked: {summary['sum']} Hours")
-print(f"### Average Working Day: {summary['mean']} Hours")
-print(f"### Shortest Working Day: {summary['min']} Hours")
-print(f"### Longest Working Day: {summary['max']} Hours")
+summary = sheet.summarise(n=days)
+for key, value in summary.items():
+    print(f"### {key}: {value} Hours")
 ```
 
 ## Last 30 days
 
 ```{python echo=FALSE, results='asis'}
 days = 30
-summary = data.summary(days)
-print(f"### Total Hours Worked: {summary['sum']} Hours")
-print(f"### Average Working Day: {summary['mean']} Hours")
-print(f"### Shortest Working Day: {summary['min']} Hours")
-print(f"### Longest Working Day: {summary['max']} Hours")
+summary = sheet.summarise(n=days)
+for key, value in summary.items():
+    print(f"### {key}: {value} Hours")
 ```
 
 ```{python echo=FALSE}
-fig, ax = data.plot_days(days)
+fig, ax = sheet.hist(days)
 plt.show()
 ```
 
@@ -145,14 +151,12 @@ plt.show()
 
 ```{python echo=FALSE, results='asis'}
 days = 90
-summary = data.summary(days)
-print(f"### Total Hours Worked: {summary['sum']} Hours")
-print(f"### Average Working Day: {summary['mean']} Hours")
-print(f"### Shortest Working Day: {summary['min']} Hours")
-print(f"### Longest Working Day: {summary['max']} Hours")
+summary = sheet.summarise(n=days)
+for key, value in summary.items():
+    print(f"### {key}: {value} Hours")
 ```
 
 ```{python echo=FALSE}
-fig, ax = data.plot_days(days)
+fig, ax = sheet.hist(days)
 plt.show()
 ```
