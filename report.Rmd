@@ -7,26 +7,6 @@ output: jrIdentity::readthedown
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
-## By default reticulate creates virtualenvs in ~/.virtualenv
-## To change where the virtualenv is created we have to use
-## the WORKON_HOME environment variable
-Sys.setenv(WORKON_HOME = ".")
-
-## Create the virtualenv
-reticulate::virtualenv_install(
-  envname = "venv",
-  python = Sys.which("python3.8"),
-  packages = c("gcsa",
-               "google",
-               "matplotlib",
-               "numpy",
-               "pandas")
-)
-
-## Activate the virtualenv
-reticulate::use_virtualenv("./venv")
-Sys.setenv("RETICULATE_PYTHON" = file.path("./venv", "bin", "python"))
 ```
 
 ```{python python-imports, echo=FALSE}
