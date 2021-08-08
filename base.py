@@ -1,7 +1,6 @@
 from datetime import date, timedelta
 from gcsa.google_calendar import GoogleCalendar
 from google.oauth2.credentials import Credentials
-import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 import numpy as np
 import os
@@ -76,7 +75,22 @@ class Timesheet():
         return ax.get_figure(), ax
 
     def time_series(self, n=90):
-        pass
+        ax = self.data.plot(legend=False, rot=45)
+        ax.set_ylabel("Hours Worked")
+        ax.set_xlabel("Date")
+        return ax.get_figure(), ax
 
     def boxplot(self, n=90):
-        pass
+        c = "C0"
+        ax = self.get_last_n_shifts(90)["shift_length"].plot(
+            kind="box",
+            vert=False,
+            boxprops=dict(color=c),
+            capprops=dict(color=c),
+            whiskerprops=dict(color=c),
+            flierprops=dict(color=c, markeredgecolor=c),
+            medianprops=dict(color=c))
+
+        ax.set_yticks([])
+        ax.set_xlabel("Hours worked")
+        return ax.get_figure(), ax
