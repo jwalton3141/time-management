@@ -59,13 +59,14 @@ class Timesheet():
     def get_last_n_shifts(self, n=90):
         return self.data.dropna().iloc[-n:]
 
-    def summarise(self, n=90, dp=2, agg=None):
-        if agg is None:
-            agg = {"Total Hours Worked": np.sum,
-                   "Average Working Day": np.median,
-                   "Shortest Working Day": np.min,
-                   "Longest Working Day": np.max}
-        return self.get_last_n_shifts(n)["shift_length"].agg(agg).round(dp)
+    def summarise(self, n=90, dp=2):
+        agg = {"Average Working Day (mean)": np.mean,
+               "Average Working Week (mean)": np.mean,
+               "Shortest Working Day": np.min,
+               "Longest Working Day": np.max}
+        summary = self.get_last_n_shifts(n)["shift_length"].agg(agg).round(dp)
+        summary["Average Working Week (mean)"] *= 5
+        return summary
 
     def hist(self, n=90):
         ax = self.get_last_n_shifts(n)["shift_length"].plot(kind="hist")

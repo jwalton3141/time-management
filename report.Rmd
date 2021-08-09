@@ -33,13 +33,24 @@ work?".
 The data used in this report comes from daily "clocked on" and "clocked off"
 tasks manually added to Jack's calendar.
 
+## Overall
+
+```{python echo=FALSE, results='asis'}
+summary = sheet.summarise(n=365)
+for period in ["Day", "Week"]:
+    key = f"Average Working {period} (mean)"
+    print(f"### {key}: {summary[key]:.2f} Hours")
+```
+
+
 ## Last 5 days
 
 ```{python echo=FALSE, results='asis'}
 days = 5
 summary = sheet.summarise(n=days)
 for key, value in summary.items():
-    print(f"### {key}: {value:.2f} Hours")
+    if key != "Average Working Week (mean)":
+        print(f"### {key}: {value:.2f} Hours")
 ```
 
 ```{python echo=FALSE}
