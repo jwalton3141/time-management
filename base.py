@@ -62,7 +62,7 @@ class Timesheet():
     def summarise(self, n=90, dp=2, agg=None):
         if agg is None:
             agg = {"Total Hours Worked": np.sum,
-                   "Average Working Day": np.mean,
+                   "Average Working Day": np.median,
                    "Shortest Working Day": np.min,
                    "Longest Working Day": np.max}
         return self.get_last_n_shifts(n)["shift_length"].agg(agg).round(dp)
