@@ -70,19 +70,19 @@ class Timesheet():
     def hist(self, n=90):
         ax = self.get_last_n_shifts(n)["shift_length"].plot(kind="hist")
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-        ax.set_xlabel("Hours worked")
+        ax.set_xlabel("Length of working day (Hours)")
         ax.set_ylabel("Frequency")
         return ax.get_figure(), ax
 
     def time_series(self, n=90):
-        ax = self.data.plot(legend=False, rot=45)
-        ax.set_ylabel("Hours Worked")
+        ax = self.get_last_n_shifts(n)["shift_length"].plot(legend=False, rot=45)
+        ax.set_ylabel("Length of working day (Hours)")
         ax.set_xlabel("Date")
         return ax.get_figure(), ax
 
     def boxplot(self, n=90):
         c = "C0"
-        ax = self.get_last_n_shifts(90)["shift_length"].plot(
+        ax = self.get_last_n_shifts(n)["shift_length"].plot(
             kind="box",
             vert=False,
             boxprops=dict(color=c),
@@ -90,7 +90,6 @@ class Timesheet():
             whiskerprops=dict(color=c),
             flierprops=dict(color=c, markeredgecolor=c),
             medianprops=dict(color=c))
-
         ax.set_yticks([])
-        ax.set_xlabel("Hours worked")
+        ax.set_xlabel("Length of working day (Hours)")
         return ax.get_figure(), ax
