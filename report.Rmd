@@ -39,7 +39,7 @@ tasks manually added to Jack's calendar.
 days = 5
 summary = sheet.summarise(n=days)
 for key, value in summary.items():
-    print(f"### {key}: {value} Hours")
+    print(f"### {key}: {value:.2f} Hours")
 ```
 
 ```{python echo=FALSE}
@@ -53,7 +53,7 @@ plt.show()
 days = 30
 summary = sheet.summarise(n=days)
 for key, value in summary.items():
-    print(f"### {key}: {value} Hours")
+    print(f"### {key}: {value:.2f} Hours")
 ```
 
 ```{python echo=FALSE}
@@ -67,7 +67,7 @@ plt.show()
 days = 90
 summary = sheet.summarise(n=days)
 for key, value in summary.items():
-    print(f"### {key}: {value} Hours")
+    print(f"### {key}: {value:.2f} Hours")
 ```
 
 ```{python echo=FALSE}
