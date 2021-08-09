@@ -9,25 +9,29 @@ output: jrIdentity::readthedown
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-The intention of this report is _not_ to provide a breakdown of how much time
-Jack spent working on which tasks and with which clients. Rather, the intention
-is to answer the higher level question of "how much time has Jack spent at
-work?". The data used in this report comes from daily "clocked on" and "clocked
-off" tasks manually added to Jack's calendar.
-
 ```{python python-imports, echo=FALSE}
 import matplotlib.pyplot as plt
 from base import Timesheet
 ```
 
-```{python echo=FALSE}
+```{python data-setup, echo=FALSE}
 plt.style.use("ggplot")
 sheet = Timesheet()
 ```
 
 ```{python echo=FALSE, results='asis'}
-print(f"Current Status: {sheet.status}")
+print(f"**Current Status**: {sheet.status}")
 ```
+
+## About
+
+The intention of this report is _not_ to provide a breakdown of how much time
+Jack spent working on which tasks and with which clients. Rather, the intention
+is to answer the higher level question of "how much time has Jack spent at
+work?".
+
+The data used in this report comes from daily "clocked on" and "clocked off"
+tasks manually added to Jack's calendar.
 
 ## Last 5 days
 
