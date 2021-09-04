@@ -11,6 +11,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{python python-imports, echo=FALSE}
 import matplotlib.pyplot as plt
+import sys
+sys.path.append("..")
 from base import Timesheet
 ```
 
