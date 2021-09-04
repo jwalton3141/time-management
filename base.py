@@ -7,14 +7,11 @@ import os
 import pandas as pd
 
 
-class Timesheet():
+class Calendar():
 
-    def __init__(self, days=90):
+    def __init__(self):
         self.__gcal_credentials__ = self.__get_gcal_credentials__()
-        self.end = date.today()
-        self.start = self.end - timedelta(days=days)
-        self.data = self.__get_timesheet__()
-        self.status = f"Clocked {'On' if self.data.iloc[-1]['clocked_off'] is None else 'Off'}"
+        self.calendar = GoogleCalendar(credentials=self.__gcal_credentials__)
 
     def __get_gcal_credentials__(self):
         """Fetch credentials from env to authenticate against calendar."""
@@ -24,12 +21,20 @@ class Timesheet():
                            client_secret=os.environ["CLIENT_SECRET"],
                            token_uri="https://oauth2.googleapis.com/token")
 
+class Timesheet(Calendar):
+
+    def __init__(self, days=90):
+        super().__init__()
+        self.end = date.today()
+        self.start = self.end - timedelta(days=days)
+        self.data = self.__get_timesheet__()
+        self.status = f"Clocked {'On' if self.data.iloc[-1]['clocked_off'] is None else 'Off'}"
+
     def __get_timecards__(self):
         """Fetch calendar events with 'clocked' in title."""
-        calendar = GoogleCalendar(credentials=self.__gcal_credentials__)
-        return calendar.get_events(time_min=self.start,
-                                   time_max=self.end,
-                                   query="clocked")
+        return self.calendar.get_events(time_min=self.start,
+                                        time_max=self.end,
+                                        query="clocked")
 
     def __get_timesheet__(self):
         """Construct pandas DataFrame of clock on / clock off events."""
@@ -94,3 +99,9 @@ class Timesheet():
         ax.set_yticks([])
         ax.set_xlabel("Length of working day (Hours)")
         return ax.get_figure(), ax
+
+
+class Planner(Calendar):
+    pass
+
+

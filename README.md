@@ -1,12 +1,11 @@
 ## About
 
-This code is used to produce the report: https://jr-jack.jmpr.io/timesheet/
-(readable only by Jumping Rivers employees).
+This repo contains code to assist in time-management related tasks carried-out
+as part of my role at [Jumping Rivers Ltd](https://www.jumpingrivers.com/about/).
 
-The intention of this report is _not_ to provide a breakdown of how much time
-Jack spent working on which tasks and with which clients. Rather, the intention
-is to answer the higher level question of "how much time has Jack spent at
-work?".
+`time-sheet/report.Rmd` uses daily "clocked on" and "clocked off" events from
+my google calendar to assess my working patterns. This report is deployed to
+https://jr-jack.jmpr.io/timesheet/ and is updated hourly.
 
-The data used to form this report comes from daily "clocked on" and "clocked off"
-tasks manually added to Jack's google calendar.
+`time-planner/report.Rmd` uses events from my google calendar to summarise my
+upcoming and scheduled / allotted client and project time.
