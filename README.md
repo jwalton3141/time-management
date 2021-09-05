@@ -8,5 +8,5 @@ as part of my role at [Jumping Rivers Ltd](https://www.jumpingrivers.com/about/)
 This report is deployed to https://jr-jack.jmpr.io/timesheet/ and is updated
 hourly.
 
-`time-planner/report.Rmd` uses events from my google calendar to summarise my
-upcoming and scheduled / allotted client and project time.
+[`time-planner/report.Rmd`](timesheet/) uses events from my google calendar to
+summarise my upcoming and scheduled / allotted client and project time.
