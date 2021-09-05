@@ -21,6 +21,7 @@ class Calendar():
                            client_secret=os.environ["CLIENT_SECRET"],
                            token_uri="https://oauth2.googleapis.com/token")
 
+
 class Timesheet(Calendar):
 
     def __init__(self, days=90):
@@ -28,7 +29,8 @@ class Timesheet(Calendar):
         self.end = date.today()
         self.start = self.end - timedelta(days=days)
         self.data = self.__get_timesheet__()
-        self.status = f"Clocked {'On' if self.data.iloc[-1]['clocked_off'] is None else 'Off'}"
+        clocked_on = self.data.iloc[-1]['clocked_off'] is None
+        self.status = "Clocked On" if clocked_on else "Clocked Off"
 
     def __get_timecards__(self):
         """Fetch calendar events with 'clocked' in title."""
@@ -46,17 +48,20 @@ class Timesheet(Calendar):
         # Preallocate dataframe for transformed data
         sheet = pd.DataFrame({"clocked_on": None,
                               "clocked_off": None},
-                              index=cards["time"].dt.date.unique())
+                             index=cards["time"].dt.date.unique())
 
         # Loop over cards and add to correct position in timesheet
         for i, row in cards.iterrows():
-            event_type = "clocked_on" if "on" in row["event"].lower() else "clocked_off"
+            event_type = ("clocked_on" if "on" in row["event"].lower()
+                          else "clocked_off")
             sheet.loc[row["time"].date(), event_type] = row["time"].time()
 
         # Compute hours worked from clocked on and clocked off data
         sheet["shift_length"] = (
-            pd.to_datetime(sheet["clocked_off"].dropna().astype(str), format='%H:%M:%S')
-            - pd.to_datetime(sheet["clocked_on"].dropna().astype(str), format='%H:%M:%S')
+            pd.to_datetime(sheet["clocked_off"].dropna().astype(str),
+                           format='%H:%M:%S')
+            - pd.to_datetime(sheet["clocked_on"].dropna().astype(str),
+                             format='%H:%M:%S')
         ).dt.seconds / (60 ** 2)
 
         return sheet
@@ -81,7 +86,8 @@ class Timesheet(Calendar):
         return ax.get_figure(), ax
 
     def time_series(self, n=90):
-        ax = self.get_last_n_shifts(n)["shift_length"].plot(legend=False, rot=45)
+        ax = self.get_last_n_shifts(n)["shift_length"].plot(legend=False,
+                                                            rot=45)
         ax.set_ylabel("Length of working day (Hours)")
         ax.set_xlabel("Date")
         return ax.get_figure(), ax
@@ -103,5 +109,3 @@ class Timesheet(Calendar):
 
 class Planner(Calendar):
     pass
-
-
