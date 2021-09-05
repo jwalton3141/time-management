@@ -15,4 +15,5 @@ jobs:
           python-version: "3.8"
       - name: flake8 Lint
         uses: py-actions/flake8@v1.1.0
-
+        with:
+          args: "--per-file-ignores='__init__.py:F401'"
