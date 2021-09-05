@@ -1,7 +1,13 @@
-venv
-*.html
-report_files
+# R ignores
 .Renviron
 .Rproj.user
 .Rhistory
+*.html
+report_files
+
+# Python ignores
+__pycache__/
+dist/
+
+# Other ignores
 *.swp
