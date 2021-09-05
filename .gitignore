@@ -4,3 +4,4 @@ report_files
 .Renviron
 .Rproj.user
 .Rhistory
+*.swp
