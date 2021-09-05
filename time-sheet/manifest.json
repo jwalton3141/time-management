@@ -1218,25 +1218,30 @@
       }
     },
     "jrIdentity": {
-      "Source": "CRAN",
-      "Repository": null,
+      "Source": "jrinternal",
+      "Repository": "https://internal.jumpingrivers.cloud/package-manager/release/__linux__/focal/latest",
       "description": {
         "Package": "jrIdentity",
         "Title": "Style Jumping Rivers Branded Content",
-        "Version": "0.3.12",
         "Authors@R": "\n    person(given = \"Jumping\",\n           family = \"Rivers\",\n           role = c(\"aut\", \"cre\"),\n           email = \"info@jumpingrivers.com\")",
         "Description": "Package to provide RMarkdown templates to create Jumping\n    Rivers branded content.",
         "License": "file LICENSE",
-        "Imports": "bookdown,\ncli,\nextrafont,\nggplot2,\nglue,\ngt (>= 0.2.2),\nhtmltools,\njrApiRStudio (>= 0.0.12),\njrApiUtils,\nknitr,\nlearnr,\nmagrittr,\nmarkdown,\npng,\npurrr,\nrmarkdown,\nrmdformats (>= 0.3.7),\nrsconnect,\nstringr,\nutils,\nxfun,\nyaml",
-        "Suggests": "pander,\ntestthat",
+        "Imports": "bookdown, cli, extrafont, ggplot2, glue, gt (>= 0.2.2),\nhtmltools, jrApiRStudio (>= 0.0.12), jrApiUtils, knitr, learnr,\nmagrittr, markdown, png, purrr, rmarkdown, rmdformats (>=\n0.3.7), rsconnect, stringr, utils, xfun, yaml",
+        "Suggests": "pander, testthat",
         "Remotes": "rstudio/gt",
         "Encoding": "UTF-8",
         "LazyData": "true",
         "RoxygenNote": "7.1.1",
         "Suggest": "knitr",
+        "Repository": "RSPM",
+        "RemoteSha": "9d94338994148e61eb5af90874f728af43eab700",
+        "Version": "0.3.12",
+        "Date": "2021-05-12",
+        "NeedsCompilation": "no",
+        "Packaged": "2021-05-12 13:08:09 UTC; root",
         "Author": "Jumping Rivers [aut, cre]",
         "Maintainer": "Jumping Rivers <info@jumpingrivers.com>",
-        "Built": "R 4.0.2; ; 2021-08-05 13:53:23 UTC; unix"
+        "Built": "R 4.0.2; ; 2021-05-17 09:05:01 UTC; unix"
       }
     },
     "jsonlite": {
