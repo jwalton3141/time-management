@@ -5,6 +5,7 @@ from matplotlib.ticker import MaxNLocator
 import numpy as np
 import os
 import pandas as pd
+import re
 
 
 class Calendar():
@@ -108,4 +109,35 @@ class Timesheet(Calendar):
 
 
 class Planner(Calendar):
-    pass
+
+    def __init__(self, days=90):
+        super().__init__()
+        self.days = days
+        self.start = date.today()
+        self.end = self.start + timedelta(days=self.days)
+        self.events = self.__get_events__()
+
+    def __get_events__(self):
+        """Construct pandas DataFrame of all calendar events."""
+        # Create DataFrame from gcsa events
+        events = self.calendar.get_events(time_min=self.start,
+                                          time_max=self.end)
+        events = pd.DataFrame([{"start": event.start,
+                                "end": event.end,
+                                "event": event.summary}
+                              for event in events if event.start is not None])
+
+        # Identify and label CLI/PRJ events
+        events["id"] = events["event"].str.extract("([A-Z]{2,4}\/[A-Z]{2,4})")
+
+        # Identify and label teaching events
+        jr_tr_mask = events["event"].str.match("\[[A-Z]{2,4}\]")
+        events.loc[jr_tr_mask, "id"] = (
+            events.loc[jr_tr_mask, "event"].str.replace("\[([A-Z]{2,4})\].*",
+                                                        "\\1/TR",
+                                                        regex=True)
+            )
+
+        # Drop all unidentified events
+        events.dropna(subset=["id"], inplace=True)
+        return events
