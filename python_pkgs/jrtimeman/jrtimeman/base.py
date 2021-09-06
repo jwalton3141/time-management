@@ -127,17 +127,32 @@ class Planner(Calendar):
                                 "event": event.summary}
                               for event in events if event.start is not None])
 
-        # Identify and label CLI/PRJ events
+        # Label CLI/PRJ events
         events["id"] = events["event"].str.extract("([A-Z]{2,4}\/[A-Z]{2,4})")
 
-        # Identify and label teaching events
+        # Identify teaching events
         jr_tr_mask = events["event"].str.match("\[[A-Z]{2,4}\]")
-        events.loc[jr_tr_mask, "id"] = (
-            events.loc[jr_tr_mask, "event"].str.replace("\[([A-Z]{2,4})\].*",
-                                                        "\\1/TR",
-                                                        regex=True)
-            )
+        # Construct CLI/TR ids
+        jr_tr_id = events.loc[jr_tr_mask,
+                              "event"].str.replace("\[([A-Z]{2,4})\].*",
+                                                   "\\1/TR",
+                                                   regex=True)
+        # Label CLI/TR events
+        events.loc[jr_tr_mask, "id"] = jr_tr_id
+
+        # Ensure start and end columns are proper datetimes
+        events[["start", "end"]] = events[["start",
+                                           "end"]].apply(pd.to_datetime,
+                                                         utc=True)
+        # Compute length of events
+        events["length"] = events["end"] - events["start"]
 
         # Drop all unidentified events
         events.dropna(subset=["id"], inplace=True)
+        # Drop event column
+        events = events.drop("event", axis=1).reset_index(drop=True)
         return events
+
+    def get_week_plans(self):
+        return self.events.groupby([self.events["start"].dt.strftime("%W"),
+                                    "id"])["length"].sum()
