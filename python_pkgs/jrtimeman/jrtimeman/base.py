@@ -112,7 +112,8 @@ class Planner(Calendar):
     def __init__(self, days=90):
         super().__init__()
         self.days = days
-        self.start = date.today()
+        # Start from beginning of current week
+        self.start = date.today() - timedelta(days=date.today().weekday())
         self.end = self.start + timedelta(days=self.days)
         self.events = self.__get_events__()
 
