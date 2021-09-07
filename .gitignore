@@ -11,3 +11,4 @@ dist/
 
 # Other ignores
 *.swp
+*.swo
