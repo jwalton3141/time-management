@@ -5,7 +5,6 @@ from matplotlib.ticker import MaxNLocator
 import numpy as np
 import os
 import pandas as pd
-import re
 
 
 class Calendar():
@@ -128,13 +127,13 @@ class Planner(Calendar):
                               for event in events if event.start is not None])
 
         # Label CLI/PRJ events
-        events["id"] = events["event"].str.extract("([A-Z]{2,4}\/[A-Z]{2,4})")
+        events["id"] = events["event"].str.extract("([A-Z]{2,4}/[A-Z]{2,4})")
 
         # Identify teaching events
-        jr_tr_mask = events["event"].str.match("\[[A-Z]{2,4}\]")
+        jr_tr_mask = events["event"].str.match("\[[A-Z]{2,4}\]") # noqa W605
         # Construct CLI/TR ids
         jr_tr_id = events.loc[jr_tr_mask,
-                              "event"].str.replace("\[([A-Z]{2,4})\].*",
+                              "event"].str.replace("\[([A-Z]{2,4})\].*", # noqa W605
                                                    "\\1/TR",
                                                    regex=True)
         # Label CLI/TR events
