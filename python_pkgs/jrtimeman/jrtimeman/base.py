@@ -155,3 +155,6 @@ class Planner(Calendar):
     def get_week_plans(self):
         return self.events.groupby([self.events["start"].dt.strftime("%W"),
                                     "id"])["length"].sum()
+
+    def show_plans(self):
+        print(self.get_week_plans().to_string())
