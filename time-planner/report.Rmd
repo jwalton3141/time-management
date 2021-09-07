@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 from jrtimeman.base import Planner
 ```
 
-```{python data-setup, echo=FALSE}
+```{python echo=FALSE, results='asis'}
 plan = Planner()
+plan.show_plans()
 ```
