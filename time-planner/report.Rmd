@@ -1,0 +1,20 @@
+---
+title: "Jack's Planner"
+author: "Filofax"
+date: "`r format(Sys.Date(), '%b %d %Y')`"
+output: jrIdentity::readthedown
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{python python-imports, echo=FALSE}
+import matplotlib.pyplot as plt
+from jrtimeman.base import Planner
+```
+
+```{python echo=FALSE, results='asis'}
+plan = Planner()
+plan.show_plans()
+```

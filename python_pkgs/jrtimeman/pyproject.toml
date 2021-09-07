@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "jrtimeman"
-version = "0.1.0"
+version = "0.2.0"
 description = "Jumping Rivers: Time Management"
 authors = ["Jack Walton <jwalton3141@gmail.com>"]
 

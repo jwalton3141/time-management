@@ -108,4 +108,53 @@ class Timesheet(Calendar):
 
 
 class Planner(Calendar):
-    pass
+
+    def __init__(self, days=90):
+        super().__init__()
+        self.days = days
+        self.start = date.today()
+        self.end = self.start + timedelta(days=self.days)
+        self.events = self.__get_events__()
+
+    def __get_events__(self):
+        """Construct pandas DataFrame of all calendar events."""
+        # Create DataFrame from gcsa events
+        events = self.calendar.get_events(time_min=self.start,
+                                          time_max=self.end)
+        events = pd.DataFrame([{"start": event.start,
+                                "end": event.end,
+                                "event": event.summary}
+                              for event in events if event.start is not None])
+
+        # Label CLI/PRJ events
+        events["id"] = events["event"].str.extract("([A-Z]{2,4}/[A-Z]{2,4})")
+
+        # Identify teaching events
+        jr_tr_mask = events["event"].str.match("\[[A-Z]{2,4}\]") # noqa W605
+        # Construct CLI/TR ids
+        jr_tr_id = events.loc[jr_tr_mask,
+                              "event"].str.replace("\[([A-Z]{2,4})\].*", # noqa W605
+                                                   "\\1/TR",
+                                                   regex=True)
+        # Label CLI/TR events
+        events.loc[jr_tr_mask, "id"] = jr_tr_id
+
+        # Ensure start and end columns are proper datetimes
+        events[["start", "end"]] = events[["start",
+                                           "end"]].apply(pd.to_datetime,
+                                                         utc=True)
+        # Compute length of events
+        events["length"] = events["end"] - events["start"]
+
+        # Drop all unidentified events
+        events.dropna(subset=["id"], inplace=True)
+        # Drop event column
+        events = events.drop("event", axis=1).reset_index(drop=True)
+        return events
+
+    def get_week_plans(self):
+        return self.events.groupby([self.events["start"].dt.strftime("%W"),
+                                    "id"])["length"].sum()
+
+    def show_plans(self):
+        print(self.get_week_plans().to_string())
