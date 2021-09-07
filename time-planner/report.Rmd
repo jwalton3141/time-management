@@ -9,6 +9,17 @@ output: jrIdentity::readthedown
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## About
+
+I use google calendar to plan and distribute my workload. Planned works are
+added as calendar events, with a client and project ID in the event
+description.
+
+Internal policy requires the upkeep of a google sheet to summarise all upcoming
+and planned works. This report was created to summarise my upcoming planned
+works, as according to my google calendar, in the format required for our
+internal google sheet.
+
 ```{python python-imports, echo=FALSE}
 from jrtimeman.base import Planner
 ```
