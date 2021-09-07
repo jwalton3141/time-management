@@ -157,4 +157,4 @@ class Planner(Calendar):
                                     "id"])["length"].sum()
 
     def show_plans(self):
-        print(plan.get_week_plans().astype(str).to_markdown())
+        print(self.get_week_plans().astype(str).to_markdown())
