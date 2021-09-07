@@ -119,7 +119,7 @@ class Planner(Calendar):
 
     def __get_events__(self):
         """Construct pandas DataFrame of all calendar events."""
-        # Create DataFrame from gcsa events
+        # Create DataFrame from calendar events
         events = self.calendar.get_events(time_min=self.start,
                                           time_max=self.end)
         events = pd.DataFrame([{"start": event.start,
@@ -128,34 +128,38 @@ class Planner(Calendar):
                               for event in events if event.start is not None])
 
         # Label CLI/PRJ events
-        events["id"] = events["event"].str.extract("([A-Z]{2,4}/[A-Z]{2,4})")
+        events["proj"] = events["event"].str.extract("([A-Z]{2,4}/[A-Z]{2,4})")
 
         # Identify teaching events
         jr_tr_mask = events["event"].str.match("\[[A-Z]{2,4}\]") # noqa W605
-        # Construct CLI/TR ids
-        jr_tr_id = events.loc[jr_tr_mask,
-                              "event"].str.replace("\[([A-Z]{2,4})\].*", # noqa W605
-                                                   "\\1/TR",
-                                                   regex=True)
+        # Construct CLI/TR project labels
+        jr_tr_proj = events.loc[jr_tr_mask,
+                                "event"].str.replace("\[([A-Z]{2,4})\].*", # noqa W605
+                                                     "\\1/TR",
+                                                     regex=True)
         # Label CLI/TR events
-        events.loc[jr_tr_mask, "id"] = jr_tr_id
+        events.loc[jr_tr_mask, "proj"] = jr_tr_proj
 
         # Ensure start and end columns are proper datetimes
         events[["start", "end"]] = events[["start",
                                            "end"]].apply(pd.to_datetime,
                                                          utc=True)
-        # Compute length of events
-        events["length"] = events["end"] - events["start"]
+        # Compute amount allotted for each event
+        events["allotted"] = events["end"] - events["start"]
 
         # Drop all unidentified events
-        events.dropna(subset=["id"], inplace=True)
+        events.dropna(subset=["proj"], inplace=True)
         # Drop event column
         events = events.drop("event", axis=1).reset_index(drop=True)
         return events
 
-    def get_week_plans(self):
-        return self.events.groupby([self.events["start"].dt.strftime("%W"),
-                                    "id"])["length"].sum()
-
-    def show_plans(self):
-        print(self.get_week_plans().astype(str).to_markdown())
+    def get_plans(self):
+        # Get the week number of each event
+        week_num = self.events["start"].dt.strftime("%W")
+        # Sum time allotted to each project, each week
+        plans = self.events.groupby([week_num, "proj"])["allotted"].sum()
+        # Rename "start" -> "week"
+        plans.index.rename(["week", "proj"], inplace=True)
+        # Convert to DataFrame
+        plans = plans.reset_index().rename({"start": "week"})
+        return plans

@@ -10,11 +10,17 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{python python-imports, echo=FALSE}
-import matplotlib.pyplot as plt
 from jrtimeman.base import Planner
 ```
 
-```{python echo=FALSE, results='asis'}
-plan = Planner()
-plan.show_plans()
+```{python fetch-plans, echo=FALSE}
+planner = Planner()
+plans = planner.get_plans()
+```
+
+```{python display-plans, echo=FALSE, results='asis'}
+for week in plans["week"].unique():
+    week_events = plans[plans["week"] == week]
+    print(f"### Week {week}")
+    print(week_events[["proj", "allotted"]].astype(str).to_markdown(index=False))
 ```
