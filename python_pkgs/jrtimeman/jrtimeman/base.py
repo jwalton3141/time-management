@@ -127,18 +127,15 @@ class Planner(Calendar):
                                 "event": event.summary}
                               for event in events if event.start is not None])
 
-        # Label CLI/PRJ events
-        events["proj"] = events["event"].str.extract("([A-Z]{2,4}/[A-Z]{2,4})")
+        # Make teaching events match CLI/PROJ pattern
+        events["event"] = events["event"].str.replace("\[([A-Z]{2,4})\]", # noqa W605
+                                                      "\\1/TR",
+                                                      regex=True)
 
-        # Identify teaching events
-        jr_tr_mask = events["event"].str.match("\[[A-Z]{2,4}\]") # noqa W605
-        # Construct CLI/TR project labels
-        jr_tr_proj = events.loc[jr_tr_mask,
-                                "event"].str.replace("\[([A-Z]{2,4})\].*", # noqa W605
-                                                     "\\1/TR",
-                                                     regex=True)
-        # Label CLI/TR events
-        events.loc[jr_tr_mask, "proj"] = jr_tr_proj
+        # Extract CLI/PRJ and remaining description from event
+        events[["proj", "details"]] = (
+            events["event"].str.extract(r"([A-Z]{2,4}/[A-Z]{2,4})\W*(.*)")
+        )
 
         # Ensure start and end columns are proper datetimes
         events[["start", "end"]] = events[["start",
@@ -156,8 +153,12 @@ class Planner(Calendar):
     def get_plans(self):
         # Get the week number of each event
         week_num = self.events["start"].dt.strftime("%W")
-        # Sum time allotted to each project, each week
-        plans = self.events.groupby([week_num, "proj"])["allotted"].sum()
+        # Sum time allotted to each project, each week, and concatenate
+        # descriptions
+        plans = self.events.groupby([week_num, "proj"]).agg(
+            {"allotted": np.sum,
+             "details": lambda x: ", ".join(x.unique())}
+        )
         # Rename "start" -> "week"
         plans.index.rename(["week", "proj"], inplace=True)
         # Convert to DataFrame
