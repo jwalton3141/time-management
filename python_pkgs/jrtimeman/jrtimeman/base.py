@@ -157,7 +157,7 @@ class Planner(Calendar):
         # descriptions
         plans = self.events.groupby([week_num, "proj"]).agg(
             {"allotted": np.sum,
-             "details": lambda x: ",".join(x.unique())}
+             "details": lambda x: ", ".join(x.unique())}
         )
         # Rename "start" -> "week"
         plans.index.rename(["week", "proj"], inplace=True)
