@@ -11,17 +11,18 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## About
 
-I use google calendar to plan and distribute my workload. Planned works are
-added as calendar events, with a client and project ID in the event
+I use Google Calendar to plan and distribute my workload. Planned works are
+added as calendar events, with a client and project ID added to the event
 description.
 
-Internal policy requires the upkeep of a google sheet to summarise all upcoming
+Internal policy requires the upkeep of a Google Sheet to summarise all upcoming
 and planned works. This report was created to summarise my upcoming planned
-works, as according to my google calendar, in the format required for our
-internal google sheet.
+works, as according to my Google Calendar, in the format required for our
+internal Google Sheet.
 
 ```{python python-imports, echo=FALSE}
 from jrtimeman.base import Planner
+from datetime import datetime
 ```
 
 ```{python fetch-plans, echo=FALSE}
@@ -29,9 +30,21 @@ planner = Planner()
 plans = planner.get_plans()
 ```
 
+## Weekly plans
+
 ```{python display-plans, echo=FALSE, results='asis'}
+# Loop over weeks
 for week in plans["week"].unique():
+
+    # Extract data from given week
     week_events = plans[plans["week"] == week]
-    print(f"### Week {week}")
-    print(week_events[["proj", "allotted"]].astype(str).to_markdown(index=False))
+
+    # Convert week number back to date
+    week_date = datetime.strptime(f"{datetime.now().year}-W{week}" + "-1", "%Y-W%W-%w").date()
+
+    # Display data
+    print(f"### Week {week} (beginning: {week_date})")
+    print(week_events[["proj", "allotted"]].rename(
+              columns={"proj": "Project",
+                       "allotted": "Planned Time"}).astype(str).to_markdown(index=False))
 ```
