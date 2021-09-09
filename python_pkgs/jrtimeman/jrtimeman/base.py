@@ -128,13 +128,13 @@ class Planner(Calendar):
                               for event in events if event.start is not None])
 
         # Make teaching events match CLI/PROJ pattern
-        events["event"] = events["event"].str.replace("\[([A-Z]{2,4})\]", # noqa W605
+        events["event"] = events["event"].str.replace("\[([A-Z]{2,5)\]", # noqa W605
                                                       "\\1/TR",
                                                       regex=True)
 
         # Extract CLI/PRJ and remaining description from event
         events[["proj", "details"]] = (
-            events["event"].str.extract(r"([A-Z]{2,4}/[A-Z]{2,4})\W*(.*)")
+            events["event"].str.extract(r"([A-Z]{2,5}/[A-Z]{2,5})\W*(.*)")
         )
 
         # Ensure start and end columns are proper datetimes
