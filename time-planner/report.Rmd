@@ -52,6 +52,6 @@ for week in plans["week"].unique():
     print(f"## Week {week} (beginning: {week_date})")
     print(week_events[["proj", "details", "allotted"]].rename(
               columns={"proj": "Project",
-                       "allotted": "Planned Time",
-                       "details": "Details"}).astype(str).to_markdown(index=False))
+                       "allotted": "Planned Time (Hours)",
+                       "details": "Details"}).astype(str).to_markdown(index=False, floatfmt=".2f"))
 ```
