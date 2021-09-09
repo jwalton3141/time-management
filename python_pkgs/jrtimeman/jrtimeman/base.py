@@ -121,14 +121,15 @@ class Planner(Calendar):
         """Construct pandas DataFrame of all calendar events."""
         # Create DataFrame from calendar events
         events = self.calendar.get_events(time_min=self.start,
-                                          time_max=self.end)
+                                          time_max=self.end,
+                                          single_events=True)
         events = pd.DataFrame([{"start": event.start,
                                 "end": event.end,
                                 "event": event.summary}
                               for event in events if event.start is not None])
 
         # Make teaching events match CLI/PROJ pattern
-        events["event"] = events["event"].str.replace("\[([A-Z]{2,5)\]", # noqa W605
+        events["event"] = events["event"].str.replace("\[([A-Z]{2,5})\]", # noqa W605
                                                       "\\1/TR",
                                                       regex=True)
 
