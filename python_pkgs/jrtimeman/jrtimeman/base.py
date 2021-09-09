@@ -141,8 +141,10 @@ class Planner(Calendar):
         events[["start", "end"]] = events[["start",
                                            "end"]].apply(pd.to_datetime,
                                                          utc=True)
-        # Compute amount allotted for each event
-        events["allotted"] = events["end"] - events["start"]
+        # Compute amount allotted for each event (in hours)
+        events["allotted"] = (events["end"] - events["start"]).apply(
+                lambda x: x.seconds / 3600
+        ).round(2)
 
         # Drop all unidentified events
         events.dropna(subset=["proj"], inplace=True)
