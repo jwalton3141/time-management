@@ -7,9 +7,15 @@ output: jrIdentity::readthedown
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+# If working locally use venv in same dir
+if (Sys.info()["nodename"] == "flegere") {
+  venv_path = "./venv"
+  reticulate::use_virtualenv(venv_path)
+  Sys.setenv("RETICULATE_PYTHON" = file.path(venv_path, "bin", "python"))
+}
 ```
 
-## About
+# About
 
 I use Google Calendar to plan and distribute my workload. Planned works are
 added as calendar events, with a client and project ID added to the event
@@ -30,7 +36,7 @@ planner = Planner()
 plans = planner.get_plans()
 ```
 
-## Weekly plans
+# Weekly plans
 
 ```{python display-plans, echo=FALSE, results='asis'}
 # Loop over weeks
@@ -43,9 +49,9 @@ for week in plans["week"].unique():
     week_date = datetime.strptime(f"{datetime.now().year}-W{week}" + "-1", "%Y-W%W-%w").date()
 
     # Display data
-    print(f"### Week {week} (beginning: {week_date})")
+    print(f"## Week {week} (beginning: {week_date})")
     print(week_events[["proj", "details", "allotted"]].rename(
               columns={"proj": "Project",
-                       "allotted": "Planned Time",
-                       "details": "Details"}).astype(str).to_markdown(index=False))
+                       "allotted": "Planned Time (Hours)",
+                       "details": "Details"}).astype(str).to_markdown(index=False, floatfmt=".2f"))
 ```
