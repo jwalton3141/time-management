@@ -54,4 +54,5 @@ for week in plans["week"].unique():
               columns={"proj": "Project",
                        "allotted": "Planned Time (Hours)",
                        "details": "Details"}).astype(str).to_markdown(index=False, floatfmt=".2f"))
+    print(f"Total planned works: {week_events['allotted'].sum()} hours\n")
 ```
