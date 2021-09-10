@@ -183,7 +183,7 @@ class Planner(Calendar):
                                                       regex=True)
         # Extract CLI/PRJ and remaining description from event
         events[["proj", "details"]] = (
-            events["event"].str.extract(r"([A-Z]{2,5}/[A-Z]{2,5})\W*(.*)")
+            events["event"].str.extract(r"([A-Z]{2,5}/[A-Z]{2,5})\s*(.*)")
         )
 
         # Drop all unidentified events
