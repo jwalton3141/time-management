@@ -33,7 +33,7 @@ from datetime import datetime
 
 ```{python fetch-plans, echo=FALSE}
 planner = Planner()
-plans = planner.get_plans()
+plans = planner.get_plans_by_week()
 ```
 
 # Weekly plans
