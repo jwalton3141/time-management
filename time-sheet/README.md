@@ -1,7 +1,6 @@
 ## About
 
-This code is used to produce the report: https://jr-jack.jmpr.io/timesheet/
-(readable only by Jumping Rivers employees).
+This code is used to produce the report: https://jr-jack.jmpr.io/timesheet/.
 
 The intention of this report is _not_ to provide a breakdown of how much time
 Jack spent working on which tasks and with which clients. Rather, the intention
