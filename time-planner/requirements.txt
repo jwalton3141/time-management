@@ -1,1 +1,1 @@
-jrtimeman==0.2.9
+jrtimeman==0.2.10
