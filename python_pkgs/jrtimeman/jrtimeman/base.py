@@ -1,9 +1,10 @@
 from datetime import date, timedelta
+import os
+
 from gcsa.google_calendar import GoogleCalendar
 from google.oauth2.credentials import Credentials
 from matplotlib.ticker import MaxNLocator
 import numpy as np
-import os
 import pandas as pd
 
 
