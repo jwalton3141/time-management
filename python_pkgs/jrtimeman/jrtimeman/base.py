@@ -34,7 +34,7 @@ class Timesheet(Calendar):
         self.end = date.today()
         self.start = self.end - timedelta(days=days)
         self.data = self._get_timesheet()
-        clocked_on = self.data.iloc[-1]['clocked_off'] is None
+        clocked_on = self.data.iloc[-1]["clocked_off"] is None
         self.status = "Clocked On" if clocked_on else "Clocked Off"
 
     def _get_timecards(self):
@@ -64,9 +64,9 @@ class Timesheet(Calendar):
         # Compute hours worked from clocked on and clocked off data
         sheet["shift_length"] = (
             pd.to_datetime(sheet["clocked_off"].dropna().astype(str),
-                           format='%H:%M:%S')
+                           format="%H:%M:%S")
             - pd.to_datetime(sheet["clocked_on"].dropna().astype(str),
-                             format='%H:%M:%S')
+                             format="%H:%M:%S")
         ).dt.seconds / (60 ** 2)
 
         return sheet
