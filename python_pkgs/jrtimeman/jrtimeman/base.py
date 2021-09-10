@@ -9,12 +9,16 @@ import pandas as pd
 
 
 class Calendar():
+    """
+    Simple wrapper around gcsa's GoogleCalendar that uses credentials
+    from the current environment for authentication.
+    """
 
     def __init__(self):
-        self.__gcal_credentials__ = self.__get_gcal_credentials__()
-        self.calendar = GoogleCalendar(credentials=self.__gcal_credentials__)
+        self._gcal_credentials = self._get_gcal_credentials()
+        self.calendar = GoogleCalendar(credentials=self._gcal_credentials)
 
-    def __get_gcal_credentials__(self):
+    def _get_gcal_credentials(self):
         """Fetch credentials from env to authenticate against calendar."""
         return Credentials(token=os.environ["TOKEN"],
                            refresh_token=os.environ["REFRESH_TOKEN"],
@@ -29,22 +33,22 @@ class Timesheet(Calendar):
         super().__init__()
         self.end = date.today()
         self.start = self.end - timedelta(days=days)
-        self.data = self.__get_timesheet__()
+        self.data = self._get_timesheet()
         clocked_on = self.data.iloc[-1]['clocked_off'] is None
         self.status = "Clocked On" if clocked_on else "Clocked Off"
 
-    def __get_timecards__(self):
+    def _get_timecards(self):
         """Fetch calendar events with 'clocked' in title."""
         return self.calendar.get_events(time_min=self.start,
                                         time_max=self.end,
                                         query="clocked")
 
-    def __get_timesheet__(self):
+    def _get_timesheet(self):
         """Construct pandas DataFrame of clock on / clock off events."""
         # Create DataFrame from gcsa events
         cards = pd.DataFrame([{"time": timecard.start,
                                "event": timecard.summary}
-                              for timecard in self.__get_timecards__()])
+                              for timecard in self._get_timecards()])
 
         # Preallocate dataframe for transformed data
         sheet = pd.DataFrame({"clocked_on": None,
@@ -116,9 +120,9 @@ class Planner(Calendar):
         # Start from beginning of current week
         self.start = date.today() - timedelta(days=date.today().weekday())
         self.end = self.start + timedelta(days=self.days)
-        self.events = self.__get_events__()
+        self.events = self._get_events()
 
-    def __get_events__(self):
+    def _get_events(self):
         """Construct pandas DataFrame of all calendar events."""
         # Create DataFrame from calendar events
         events = self.calendar.get_events(time_min=self.start,
