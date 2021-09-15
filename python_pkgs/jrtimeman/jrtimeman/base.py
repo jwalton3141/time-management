@@ -6,6 +6,7 @@ from google.oauth2.credentials import Credentials
 from matplotlib.ticker import MaxNLocator
 import numpy as np
 import pandas as pd
+from .credentials import get_credentials_from_dict, get_credentials_from_env
 
 
 class Calendar():
@@ -14,18 +15,9 @@ class Calendar():
     from the current environment for authentication.
     """
 
-    def __init__(self):
-        self._credentials = self._get_credentials()
+    def __init__(self, credentials_dict=None):
+        self._credentials = (credentials_dict and get_credentials_from_dict(credentials_dict)) or get_credentials_from_env()
         self.calendar = GoogleCalendar(credentials=self._credentials)
-
-    def _get_credentials(self):
-        """Fetch credentials from env to authenticate against calendar."""
-        return Credentials(token=os.environ["TOKEN"],
-                           refresh_token=os.environ["REFRESH_TOKEN"],
-                           client_id=os.environ["CLIENT_ID"],
-                           client_secret=os.environ["CLIENT_SECRET"],
-                           token_uri="https://oauth2.googleapis.com/token")
-
 
 class Timesheet(Calendar):
     """
@@ -33,9 +25,9 @@ class Timesheet(Calendar):
     calendar events added to Calendar.
     """
 
-    def __init__(self, days=90):
+    def __init__(self, days=90, **kwargs):
         # Inherit from Calendar object
-        super().__init__()
+        super().__init__(**kwargs)
 
         self.days = days
         self.end = date.today()
@@ -135,9 +127,9 @@ class Planner(Calendar):
     purposes.
     """
 
-    def __init__(self, days=90):
+    def __init__(self, days=90, **kwargs):
         # Inherit from Calendar object
-        super().__init__()
+        super().__init__(**kwargs)
 
         self.days = days
         # Start from beginning of current week
