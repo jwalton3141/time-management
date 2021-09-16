@@ -1,20 +1,18 @@
 from google.oauth2.credentials import Credentials
 import os
 from typing import List
+from . import utils
 
 def get_credentials_from_dict(cred: dict) -> Credentials:
   """
   Create and return a google.oauth2.credentials.Credentials
   object from environment variables.
   """
-  cred = dict_keys_to_lower(cred)
+  cred = utils.dict_keys_to_lower(cred)
   return Credentials(**cred, token_uri="https://oauth2.googleapis.com/token")
 
 
-def dict_keys_to_lower(x: dict) -> dict:
-  return {
-    k.lower() : v for k, v in x.items()
-  }
+
 
 
 def get_credentials_from_env() -> Credentials:
@@ -48,8 +46,10 @@ def has_env_vars(*args) -> bool:
   """Checks for the presence of all env variable names
   given in *args
 
-  Arguments:
-  *args - strings, names of environment variables to check for
+  Parameters
+  ----------
+  *args : *str 
+    names of environment variables to check for
   """
   return all([a in os.environ for a in args])
 
@@ -57,7 +57,9 @@ def missing_env_vars(*args) -> List[str]:
   """Given names of env vars to look for return 
   a list of those which are missing.
 
-  Arguments:
-  *args - strings, names of environment variables to check for
+  Parameters
+  ----------
+  *args : *str
+    names of environment variables to check for
   """
   return [a for a in args if a not in os.environ]

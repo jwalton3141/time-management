@@ -10,14 +10,25 @@ from .credentials import get_credentials_from_dict, get_credentials_from_env
 
 
 class Calendar():
-    """
-    Simple wrapper around gcsa's GoogleCalendar that uses credentials
-    from the current environment for authentication.
-    """
+  """
+  Simple wrapper around gcsa's GoogleCalendar that uses credentials
+  from the current environment for authentication.
 
-    def __init__(self, credentials_dict=None):
-        self._credentials = (credentials_dict and get_credentials_from_dict(credentials_dict)) or get_credentials_from_env()
-        self.calendar = GoogleCalendar(credentials=self._credentials)
+  Attributes
+  ----------
+  calendar : A gcsa.google_calendar.GoogleCalendar object
+  """
+
+  def __init__(self, credentials_dict=None):
+    """
+    Parameters
+    ----------
+    credentials_dict : dict, optional
+      If no credentials dict is passed, the default behaviour is to try to construct the
+      calendar object using environment variables
+    """
+    self._credentials = (credentials_dict and get_credentials_from_dict(credentials_dict)) or get_credentials_from_env()
+    self.calendar = GoogleCalendar(credentials=self._credentials)
 
 class Timesheet(Calendar):
     """
