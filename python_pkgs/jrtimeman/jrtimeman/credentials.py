@@ -51,7 +51,7 @@ def has_env_vars(*args) -> bool:
 
     Parameters
     ----------
-    *args : *str 
+    *args : *str
       names of environment variables to check for
     """
     return all([a in os.environ for a in args])
