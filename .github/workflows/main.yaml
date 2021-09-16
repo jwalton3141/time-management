@@ -32,6 +32,9 @@ jobs:
         uses: abatilo/actions-poetry@v2.0.0
         with:
           poetry-version: 1.0
+      - name: Install poetry dependencies
+        working-directory: "./python_pkgs/jrtimeman"
+        run: poetry install
       - name: Run poetry tests
         working-directory: "./python_pkgs/jrtimeman"
         run: poetry run test
