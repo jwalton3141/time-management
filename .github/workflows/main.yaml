@@ -33,4 +33,5 @@ jobs:
         with:
           poetry-version: 1.0
       - name: Run poetry tests
+        working-directory: "./python_pkgs/jrtimeman"
         run: poetry run test
