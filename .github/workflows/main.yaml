@@ -17,3 +17,20 @@ jobs:
         uses: py-actions/flake8@v1.1.0
         with:
           args: '--per-file-ignores="__init__.py:F401"'
+  test:
+    runs-on: ubuntu-latest
+    name: Test
+    needs: [flake8-lint]
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v2
+      - name: Set up Python environment
+        uses: actions/setup-python@v1
+        with:
+          python-version: "3.8"
+      - name: Set up poetry
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: 1.0
+      - name: Run poetry tests
+        run: poetry run test
