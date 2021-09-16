@@ -1,4 +1,4 @@
-from typing import Tuple, TYPE_CHECKING
+from typing import Tuple
 from datetime import date
 
 
