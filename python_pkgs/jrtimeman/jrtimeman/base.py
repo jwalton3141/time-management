@@ -1,51 +1,72 @@
 from datetime import date, timedelta
-import os
-
 from gcsa.google_calendar import GoogleCalendar
-from google.oauth2.credentials import Credentials
 from matplotlib.ticker import MaxNLocator
 import numpy as np
 import pandas as pd
+from .credentials import get_credentials_from_dict, get_credentials_from_env
+from .utils import get_date_range_vals
 
 
 class Calendar():
     """
     Simple wrapper around gcsa's GoogleCalendar that uses credentials
     from the current environment for authentication.
+
+    Attributes
+    ----------
+    calendar : A gcsa.google_calendar.GoogleCalendar object
     """
 
-    def __init__(self):
-        self._credentials = self._get_credentials()
+    def __init__(self, credentials_dict=None):
+        """
+        Parameters
+        ----------
+        credentials_dict : dict, optional
+          If no credentials dict is passed, the default behaviour is to try to
+          construct the calendar object using environment variables
+        """
+        self._credentials = (
+            credentials_dict and
+            get_credentials_from_dict(credentials_dict)
+        ) or get_credentials_from_env()
         self.calendar = GoogleCalendar(credentials=self._credentials)
-
-    def _get_credentials(self):
-        """Fetch credentials from env to authenticate against calendar."""
-        return Credentials(token=os.environ["TOKEN"],
-                           refresh_token=os.environ["REFRESH_TOKEN"],
-                           client_id=os.environ["CLIENT_ID"],
-                           client_secret=os.environ["CLIENT_SECRET"],
-                           token_uri="https://oauth2.googleapis.com/token")
 
 
 class Timesheet(Calendar):
     """
     Inspect working patterns from daily 'clocked on' and 'clocked off'
     calendar events added to Calendar.
+
+    Attributes
+    ----------
+    days: int
+        Number of days to look back when creating time sheet
+    end: datetime.date
+        End of calendar range, datetime.date.today()
+    start:
     """
 
-    def __init__(self, days=90):
+    def __init__(
+        self, days: int = 90,
+        end: date = date.today(), start: date = None,
+        **kwargs
+    ):
         # Inherit from Calendar object
-        super().__init__()
+        super().__init__(**kwargs)
 
-        self.days = days
-        self.end = date.today()
-        self.start = self.end - timedelta(days=self.days)
+        if start is None:
+            start = end - timedelta(days=days)
+        self.start, self.end, self.days = get_date_range_vals(start, end)
+
         self.data = self._get_timesheet()
 
         # If the most recent entry doesn't have a clocked off time, then
         # I'm still working
-        clocked_on = self.data.iloc[-1]["clocked_off"] is None
-        self.status = "Clocked On" if clocked_on else "Clocked Off"
+        if self.data.shape == (0, 0):
+            self.status = "Clocked Off"
+        else:
+            clocked_on = self.data.iloc[-1]["clocked_off"] is None
+            self.status = "Clocked On" if clocked_on else "Clocked Off"
 
     def _get_timecards(self):
         """Fetch calendar events with 'clocked' in title."""
@@ -53,17 +74,29 @@ class Timesheet(Calendar):
                                         time_max=self.end,
                                         query="clocked")
 
-    def _get_timesheet(self):
+    def _get_timesheet(self) -> pd.DataFrame:
         """Construct pandas DataFrame of clock on / clock off events."""
         # Create DataFrame from gcsa events
-        cards = pd.DataFrame([{"time": timecard.start,
-                               "event": timecard.summary}
-                              for timecard in self._get_timecards()])
+        cards = pd.DataFrame([
+            {
+                "time": timecard.start,
+                "event": timecard.summary
+            }
+            for timecard in self._get_timecards()
+        ])
+
+        # escape hatch if no events in card
+        if cards.shape == (0, 0):
+            return pd.DataFrame()
 
         # Preallocate DataFrame to hold transformed data
-        sheet = pd.DataFrame({"clocked_on": None,
-                              "clocked_off": None},
-                             index=cards["time"].dt.date.unique())
+        sheet = pd.DataFrame(
+            {
+                "clocked_on": None,
+                "clocked_off": None
+            },
+            index=cards["time"].dt.date.unique()
+        )
 
         # Loop over cards and collate
         for i, row in cards.iterrows():
@@ -79,7 +112,7 @@ class Timesheet(Calendar):
                              format="%H:%M:%S")
             - pd.to_datetime(sheet["clocked_on"].dropna().astype(str),  # noqa E131
                              format="%H:%M:%S")
-        ).dt.seconds / (60**2)
+        ).dt.seconds / (60*60)
 
         return sheet
 
@@ -135,9 +168,9 @@ class Planner(Calendar):
     purposes.
     """
 
-    def __init__(self, days=90):
+    def __init__(self, days=90, **kwargs):
         # Inherit from Calendar object
-        super().__init__()
+        super().__init__(**kwargs)
 
         self.days = days
         # Start from beginning of current week
@@ -165,7 +198,7 @@ class Planner(Calendar):
         # Ensure start and end columns are proper datetimes
         events[["start", "end"]] = (
             events[["start", "end"]].apply(pd.to_datetime, utc=True)
-            )
+        )
         # Compute length of each event
         length = events["end"] - events["start"]
         # Record length in hours
