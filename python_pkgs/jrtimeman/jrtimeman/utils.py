@@ -1,3 +1,7 @@
+from typing import Tuple, TYPE_CHECKING
+from datetime import date
+
+
 def dict_keys_to_lower(x: dict) -> dict:
     """
     Transform dictionary keys to all lower case.
@@ -13,3 +17,9 @@ def dict_keys_to_lower(x: dict) -> dict:
     return {
         k.lower(): v for k, v in x.items()
     }
+
+
+def get_date_range_vals(
+    start: date, end: date
+) -> Tuple[date, date, int]:
+    return start, end, (end-start).days
