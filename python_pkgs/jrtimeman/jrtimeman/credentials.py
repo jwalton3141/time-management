@@ -48,8 +48,8 @@ def get_credentials_from_env() -> Credentials:
 
 
 def has_env_vars(*args) -> bool:
-    """Checks for the presence of all env variable names
-    given in *args
+    """
+    Checks for the presence of all env variable names given in *args
 
     Parameters
     ----------
@@ -60,8 +60,9 @@ def has_env_vars(*args) -> bool:
 
 
 def missing_env_vars(*args) -> List[str]:
-    """Given names of env vars to look for return
-    a list of those which are missing.
+    """
+    Given names of env vars to look for return a list of those which are
+    missing.
 
     Parameters
     ----------
