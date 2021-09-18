@@ -64,7 +64,7 @@ class Timesheet(Calendar):
 
         # If the most recent entry doesn't have a clocked off time, then
         # I'm still working
-        if self.data.shape == (0, 0):
+        if self.data.size == 0:
             self.status = "Clocked Off"
         else:
             clocked_on = self.data.iloc[-1]["clocked_off"] is None
@@ -88,7 +88,7 @@ class Timesheet(Calendar):
         ])
 
         # escape hatch if no events in card
-        if cards.shape == (0, 0):
+        if cards.size == 0:
             return pd.DataFrame()
 
         # Preallocate DataFrame to hold transformed data
