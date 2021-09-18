@@ -40,7 +40,7 @@ my calendar to inspect my working patterns.")
 
 ## Tests
 
-Tests can be run via
+Tests can be run with
 
 ```
 poetry run test
