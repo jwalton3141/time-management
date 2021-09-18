@@ -29,7 +29,7 @@ def get_credentials_from_env() -> Credentials:
 
     Raises
     ------
-    ValueError
+    MissingEnvVar
       If not all env vars are available for authentication
     """
     args_to_search = ["TOKEN", "REFRESH_TOKEN", "CLIENT_ID", "CLIENT_SECRET"]
