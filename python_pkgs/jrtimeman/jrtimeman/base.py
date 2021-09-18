@@ -48,11 +48,11 @@ class Timesheet(Calendar):
     start:
     """
 
-    def __init__(
-        self, days: int = 90,
-        end: date = date.today(), start: date = None,
-        **kwargs
-    ):
+    def __init__(self,
+                 days: int = 90,
+                 end: date = date.today(),
+                 start: date = None,
+                 **kwargs):
         # Inherit from Calendar object
         super().__init__(**kwargs)
 
