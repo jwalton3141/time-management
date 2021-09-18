@@ -7,13 +7,13 @@ from . import utils
 from .errors import MissingEnvVar
 
 
-def get_credentials_from_dict(cred: dict) -> Credentials:
+def get_credentials_from_dict(creds: dict) -> Credentials:
     """
     Create and return a google.oauth2.credentials.Credentials
     object from environment variables.
     """
-    cred = utils.dict_keys_to_lower(cred)
-    return Credentials(**cred, token_uri="https://oauth2.googleapis.com/token")
+    creds = utils.dict_keys_to_lower(creds)
+    return Credentials(**creds, token_uri="https://oauth2.googleapis.com/token")
 
 
 def get_credentials_from_env() -> Credentials:
