@@ -1,6 +1,7 @@
-import jrtimeman.credentials
-import unittest
 import os
+import unittest
+
+import jrtimeman.credentials
 
 
 class TestCredentialsHelpers(unittest.TestCase):
