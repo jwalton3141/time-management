@@ -2,8 +2,7 @@ import subprocess
 
 
 def test():
-    """Run all unittests.
-    """
+    """Run all unittests."""
     result = subprocess.run(
       ['python', '-u', '-m', 'unittest', 'discover'],
       capture_output=True
