@@ -14,12 +14,9 @@ def dict_keys_to_lower(x: dict) -> dict:
     x : dict
       a dictionary
     """
-    return {
-        k.lower(): v for k, v in x.items()
-    }
+    return {k.lower(): v for k, v in x.items()}
 
 
-def get_date_range_vals(
-    start: date, end: date
-) -> Tuple[date, date, int]:
+def get_date_range_vals(start: date,
+                        end: date) -> Tuple[date, date, int]:
     return start, end, (end-start).days
