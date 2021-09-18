@@ -2,7 +2,7 @@ from datetime import date
 from typing import Tuple
 
 
-def dict_keys_to_lower(x: dict) -> dict:
+def dict_keys_to_lower(d: dict) -> dict:
     """
     Transform dictionary keys to all lower case.
 
@@ -12,7 +12,7 @@ def dict_keys_to_lower(x: dict) -> dict:
 
     Parameters
     ----------
-    x : dict
+    d : dict
         Dictionary to lowercase keys of.
 
     Returns
@@ -20,7 +20,7 @@ def dict_keys_to_lower(x: dict) -> dict:
     dict
         Dictionary with same values as input, but lowercased keys.
     """
-    return {k.lower(): v for k, v in x.items()}
+    return {k.lower(): v for k, v in d.items()}
 
 
 def get_date_range_vals(start: date,
