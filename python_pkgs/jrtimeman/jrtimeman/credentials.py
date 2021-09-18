@@ -13,7 +13,8 @@ def get_credentials_from_dict(creds: dict) -> Credentials:
     object from environment variables.
     """
     creds = utils.dict_keys_to_lower(creds)
-    return Credentials(**creds, token_uri="https://oauth2.googleapis.com/token")
+    return Credentials(**creds,
+                       token_uri="https://oauth2.googleapis.com/token")
 
 
 def get_credentials_from_env() -> Credentials:
