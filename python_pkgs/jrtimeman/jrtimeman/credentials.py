@@ -35,7 +35,7 @@ def get_credentials_from_env() -> Credentials:
     args_to_search = ["TOKEN", "REFRESH_TOKEN", "CLIENT_ID", "CLIENT_SECRET"]
     if not has_env_vars(*args_to_search):
         missing = missing_env_vars(*args_to_search)
-        err = f"Missing environment variables: {missing}"
+        err = f"Missing environment variable(s): {', '.join(missing)}"
         raise ValueError(err)
 
     return Credentials(
