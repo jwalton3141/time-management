@@ -18,5 +18,5 @@ class TestCredentialsHelpers(unittest.TestCase):
         self.assertFalse(jrtimeman.credentials.has_env_vars("JAMIE", "COLIN"))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
