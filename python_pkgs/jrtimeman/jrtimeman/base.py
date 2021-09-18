@@ -1,8 +1,10 @@
 from datetime import date, timedelta
+
 from gcsa.google_calendar import GoogleCalendar
 from matplotlib.ticker import MaxNLocator
 import numpy as np
 import pandas as pd
+
 from .credentials import get_credentials_from_dict, get_credentials_from_env
 from .utils import get_date_range_vals
 
