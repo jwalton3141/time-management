@@ -1,3 +1,5 @@
+![example workflow](https://github.com/jwalton3141/time-management/actions/workflows/main.yml/badge.svg)
+
 ## About
 
 This repo contains code to assist in time-management related tasks carried-out
