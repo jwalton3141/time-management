@@ -1,4 +1,4 @@
-![example workflow](https://github.com/jwalton3141/time-management/actions/workflows/main.yml/badge.svg)
+[![flake8 Lint](https://github.com/jwalton3141/time-management/actions/workflows/main.yaml/badge.svg)](https://github.com/jwalton3141/time-management/actions/workflows/main.yaml)
 
 ## About
 
