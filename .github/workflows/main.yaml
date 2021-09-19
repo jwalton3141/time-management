@@ -1,34 +1,36 @@
-name: flake8 Lint
+name: Python package
 
-on: pull_request
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
 
 jobs:
-  flake8-lint:
+  build:
+
     runs-on: ubuntu-latest
-    if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
     name: Lint
+    if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.7, 3.8, 3.9]
+
     steps:
+
       - name: Check out source repository
         uses: actions/checkout@v2
-      - name: Set up Python environment
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
-          python-version: "3.8"
+          python-version: ${{ matrix.python-version }}
+
       - name: flake8 Lint
         uses: py-actions/flake8@v1.1.0
         with:
           args: '--per-file-ignores="__init__.py:F401"'
-  test:
-    runs-on: ubuntu-latest
-    name: Test
-    needs: [flake8-lint]
-    steps:
-      - name: Check out source repository
-        uses: actions/checkout@v2
-      - name: Set up Python environment
-        uses: actions/setup-python@v1
-        with:
-          python-version: "3.8"
+
       - name: Set up poetry
         uses: abatilo/actions-poetry@v2.0.0
         with:
