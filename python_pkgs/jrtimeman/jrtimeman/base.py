@@ -82,7 +82,7 @@ class Timesheet(Calendar):
         cards = pd.DataFrame([
             {
                 "time": timecard.start,
-                "event": timecard.summary
+                "event": timecard.summary,
             }
             for timecard in self._get_timecards()
         ])
@@ -95,7 +95,7 @@ class Timesheet(Calendar):
         sheet = pd.DataFrame(
             {
                 "clocked_on": None,
-                "clocked_off": None
+                "clocked_off": None,
             },
             index=cards["time"].dt.date.unique()
         )
@@ -124,10 +124,12 @@ class Timesheet(Calendar):
 
     def summarise(self, n=90, dp=2):
         """Compute shift statistics from last n shifts."""
-        agg = {"Average Working Day (mean)": np.mean,
+        agg = {
+               "Average Working Day (mean)": np.mean,
                "Average Working Week (mean)": np.mean,
                "Shortest Working Day": np.min,
-               "Longest Working Day": np.max}
+               "Longest Working Day": np.max,
+              }
         summary = self.get_last_n_shifts(n)["shift_length"].agg(agg).round(dp)
         summary["Average Working Week (mean)"] *= 5
         return summary
@@ -150,7 +152,8 @@ class Timesheet(Calendar):
             capprops=dict(color=c),
             whiskerprops=dict(color=c),
             flierprops=dict(color=c, markeredgecolor=c),
-            medianprops=dict(color=c))
+            medianprops=dict(color=c),
+            )
         ax.set_yticks([])
         ax.set_xlabel("Length of working day (Hours)")
         return ax.get_figure(), ax
@@ -192,10 +195,14 @@ class Planner(Calendar):
                                           single_events=True)
 
         # Create DataFrame from calendar events
-        events = pd.DataFrame([{"start": event.start,
-                                "end": event.end,
-                                "event": event.summary}
-                              for event in events if event.start is not None])
+        events = pd.DataFrame([
+            {
+                "start": event.start,
+                "end": event.end,
+                "event": event.summary,
+            }
+            for event in events if event.start is not None
+        ])
 
         # Ensure start and end columns are proper datetimes
         events[["start", "end"]] = (
@@ -234,8 +241,10 @@ class Planner(Calendar):
         # Sum time allotted to each project, each week, and concatenate
         # descriptions
         plans = self.events.groupby([week_num, "proj"]).agg(
-            {"allotted": np.sum,
-             "details": lambda x: ", ".join(x.unique())}
+            {
+                "allotted": np.sum,
+                "details": lambda x: ", ".join(x.unique()),
+            }
         )
         # Rename "start" -> "week"
         plans.index.rename(["week", "proj"], inplace=True)
