@@ -27,10 +27,12 @@ class Calendar():
           If no credentials dict is passed, the default behaviour is to try to
           construct the calendar object using environment variables
         """
+        
         self._credentials = (
-            credentials_dict and
-            get_credentials_from_dict(credentials_dict)
-        ) or get_credentials_from_env()
+            get_credentials_from_dict(credentials_dict) 
+            if credentials_dict is not None else
+            self._credentials = get_credentials_from_env()
+        )
         self.calendar = GoogleCalendar(credentials=self._credentials)
 
 
