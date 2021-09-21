@@ -14,8 +14,13 @@ gcsa = "^1.2.0"
 google = "^3.0.0"
 tabulate = "^0.8.9"
 
+[tool.poetry.scripts]
+test = "scripts:test"
+codecov = "scripts:coverage_report"
+
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
+coverage = "^5.5"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
