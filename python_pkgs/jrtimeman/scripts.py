@@ -14,6 +14,7 @@ def test():
         ]
     )
 
+
 def _coverage():
     """Coverage
 
@@ -27,6 +28,7 @@ def _coverage():
             'tests'
         ]
     )
+
 
 def coverage_report():
     """Coverage report
