@@ -31,7 +31,7 @@ class Calendar():
         self._credentials = (
             get_credentials_from_dict(credentials_dict) 
             if credentials_dict is not None else
-            self._credentials = get_credentials_from_env()
+            get_credentials_from_env()
         )
         self.calendar = GoogleCalendar(credentials=self._credentials)
 
