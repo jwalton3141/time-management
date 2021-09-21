@@ -12,10 +12,13 @@ class TestCredentialsHelpers(unittest.TestCase):
         os.environ["ESTHER"] = "mrs slavedriver"
         self.assertTrue(jrtimeman.credentials.has_env_vars([]))
         self.assertTrue(jrtimeman.credentials.has_env_vars(["COLIN"]))
-        self.assertTrue(jrtimeman.credentials.has_env_vars(["COLIN", "ESTHER"]))
+        self.assertTrue(jrtimeman.credentials.has_env_vars(["COLIN",
+                                                            "ESTHER"]))
         self.assertFalse(jrtimeman.credentials.has_env_vars(["JAMIE"]))
-        self.assertFalse(jrtimeman.credentials.has_env_vars(["JAMIE", "JACK"]))
-        self.assertFalse(jrtimeman.credentials.has_env_vars(["JAMIE", "COLIN"]))
+        self.assertFalse(jrtimeman.credentials.has_env_vars(["JAMIE",
+                                                             "JACK"]))
+        self.assertFalse(jrtimeman.credentials.has_env_vars(["JAMIE",
+                                                             "COLIN"]))
 
 
 if __name__ == "__main__":
