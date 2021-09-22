@@ -1,18 +1,16 @@
 name: Tag
 
 on:
-#  workflow_run:
-#    workflows: ["Verify"]
-#    branches: [main]
-#    types: [completed]
-  push:
-    branches: [tag-debugging]
+  workflow_run:
+    workflows: ["Verify"]
+    branches: [main]
+    types: [completed]
 
 jobs:
   tag-repo:
 
     runs-on: ubuntu-latest
-    #if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
 
@@ -47,9 +45,6 @@ jobs:
           echo ${{ steps.git.outputs.TAGS }} | grep -q ${{ steps.package.outputs.VERSION }}
           echo ::set-output name=IS_TAGGED::$?
         id: version
-
-      - name: Debug is_tagged
-        run: echo ${{ steps.version.outputs.IS_TAGGED }}
 
       - name: Tag repo at discovered package version
         if: ${{ !steps.version.outputs.IS_TAGGED }}
