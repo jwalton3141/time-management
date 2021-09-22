@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Check out source repository
         uses: actions/checkout@v2
       - name: Set up Python 3.7
@@ -38,11 +39,6 @@ jobs:
         run: |
           echo "::set-output name=IS_TAGGED::$(echo ${{ steps.git.outputs.TAGS }} | grep -q ${{ steps.package.outputs.VERSION }})"
         id: version
-
-      - name: View context attributes
-        uses: actions/github-script@v4
-        with:
-          script: console.log(context)
 
       - name: Tag repo at discovered package version
         if: ${{ !steps.version.outputs.IS_TAGGED }}
