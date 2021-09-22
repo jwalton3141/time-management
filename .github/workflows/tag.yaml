@@ -2,7 +2,7 @@ name: Tag repo
 
 on: 
   push: 
-    branches: main
+    branches: release-action
 
 jobs:
   build:
