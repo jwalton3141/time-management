@@ -27,9 +27,9 @@ jobs:
         run:  echo "::set-output name=TAGS::$(git --no-pager tag --list)"
         id: tags
 
-      - name: Display discovered version
+      - name: Display discovered package version
         run: echo ${{ steps.version.outputs.VERSION }}
-      - name: Display discovered tags
+      - name: Display discovered git tags
         run: echo ${{ steps.tags.outputs.TAGS }}
 
       - name: Check if tag exists for current version
