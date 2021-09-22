@@ -27,9 +27,9 @@ class Calendar():
           If no credentials dict is passed, the default behaviour is to try to
           construct the calendar object using environment variables
         """
-        
+
         self._credentials = (
-            get_credentials_from_dict(credentials_dict) 
+            get_credentials_from_dict(credentials_dict)
             if credentials_dict is not None else
             get_credentials_from_env()
         )
