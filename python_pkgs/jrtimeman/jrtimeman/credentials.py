@@ -33,9 +33,9 @@ def get_credentials_from_env() -> Credentials:
     MissingEnvVar
       If not all env vars are available for authentication
     """
-    args_to_search = ["TOKEN", "REFRESH_TOKEN", "CLIENT_ID", "CLIENT_SECRET"]
-    if not has_env_vars(*args_to_search):
-        missing = missing_env_vars(*args_to_search)
+    vars_needed = ["TOKEN", "REFRESH_TOKEN", "CLIENT_ID", "CLIENT_SECRET"]
+    if not has_env_vars(vars_needed):
+        missing = missing_env_vars(vars_needed)
         raise MissingEnvVar(missing)
 
     return Credentials(
@@ -47,26 +47,26 @@ def get_credentials_from_env() -> Credentials:
     )
 
 
-def has_env_vars(*args) -> bool:
+def has_env_vars(vars: List[str]) -> bool:
     """
-    Checks for the presence of all env variable names given in *args
+    Checks for the presence of all env variable names in vars
 
     Parameters
     ----------
-    *args : *str
+    vars : list of strings
       names of environment variables to check for
     """
-    return all([a in os.environ for a in args])
+    return all([var in os.environ for var in vars])
 
 
-def missing_env_vars(*args) -> List[str]:
+def missing_env_vars(vars: List[str]) -> List[str]:
     """
     Given names of env vars to look for return a list of those which are
     missing.
 
     Parameters
     ----------
-    *args : *str
+    vars : list of strings
       names of environment variables to check for
     """
-    return [a for a in args if a not in os.environ]
+    return [var for var in vars if var not in os.environ]

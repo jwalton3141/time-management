@@ -10,5 +10,5 @@ def test():
     print(result.stdout.decode("utf8"), end="")
     print(result.stderr.decode("utf8"), end="")
     # helpful in a CI pipeline
-    if result.returncode != 0:
+    if result.returncode:
         exit(code=result.returncode)

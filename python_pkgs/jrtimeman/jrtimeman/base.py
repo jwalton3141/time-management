@@ -27,10 +27,12 @@ class Calendar():
           If no credentials dict is passed, the default behaviour is to try to
           construct the calendar object using environment variables
         """
+
         self._credentials = (
-            credentials_dict and
             get_credentials_from_dict(credentials_dict)
-        ) or get_credentials_from_env()
+            if credentials_dict is not None else
+            get_credentials_from_env()
+        )
         self.calendar = GoogleCalendar(credentials=self._credentials)
 
 
@@ -118,7 +120,7 @@ class Timesheet(Calendar):
 
         return sheet
 
-    def get_last_n_shifts(self, n=90):
+    def get_last_n_shifts(self, n=90) -> pd.DataFrame:
         """Return data from last n shifts."""
         return self.data.dropna().iloc[-n:]
 
@@ -173,7 +175,9 @@ class Planner(Calendar):
     purposes.
     """
 
-    def __init__(self, days=90, **kwargs):
+    def __init__(self,
+                 days: int = 90,
+                 **kwargs):
         # Inherit from Calendar object
         super().__init__(**kwargs)
 
@@ -187,7 +191,7 @@ class Planner(Calendar):
         # Curate CLI/PROJ events
         self.events = self._get_cli_proj_events()
 
-    def _get_all_events(self):
+    def _get_all_events(self) -> pd.DataFrame:
         """Construct pandas DataFrame of all calendar events."""
         # Query calendar
         events = self.calendar.get_events(time_min=self.start,
@@ -214,7 +218,7 @@ class Planner(Calendar):
         events["allotted"] = length.apply(lambda x: x.seconds / 3600).round(2)
         return events
 
-    def _get_cli_proj_events(self):
+    def _get_cli_proj_events(self) -> pd.DataFrame:
         """Extract and tag all CLI/PROJ events."""
         # Make a copy of raw data for manipulation
         events = self._raw_data.copy()
@@ -234,7 +238,7 @@ class Planner(Calendar):
         events = events.drop("event", axis=1).reset_index(drop=True)
         return events
 
-    def get_plans_by_week(self):
+    def get_plans_by_week(self) -> pd.DataFrame:
         """Get week plans."""
         # Get the week number of each event
         week_num = self.events["start"].dt.strftime("%W")
