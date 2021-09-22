@@ -1,4 +1,4 @@
-name: Tag repo
+name: Tag
 
 on: 
   push: 
@@ -21,26 +21,24 @@ jobs:
         with:
           poetry-version: 1.1.8
 
-      - name: Get version from pyproject.toml
+      - name: Get package version from pyproject.toml
         working-directory: "./python_pkgs/jrtimeman"
         run: echo "::set-output name=VERSION::$(poetry version --short)"
-        id: version
+        id: package
       - name: Get git tags
-        run:  echo "::set-output name=TAGS::$(git --no-pager tag --list)"
-        id: tags
+        run: echo "::set-output name=TAGS::$(git --no-pager tag --list)"
+        id: git
 
       - name: Display discovered package version
-        run: echo ${{ steps.version.outputs.VERSION }}
+        run: echo ${{ steps.package.outputs.VERSION }}
       - name: Display discovered git tags
-        run: echo ${{ steps.tags.outputs.TAGS }}
+        run: echo ${{ steps.git.outputs.TAGS }}
 
-      - name: Check if tag exists for current version
+      - name: Check if tag exists for current package version
         run: |
-          echo "::set-output name=BOOL::$(echo ${{ steps.tags.outputs.TAGS }} | grep -q ${{ steps.version.outputs.VERSION }})"
-        id: is_version_tagged
-      - name: Display whether current version is tagged
-        run: echo ${{ steps.is_version_tagged.outputs.BOOL }}
+          echo "::set-output name=IS_TAGGED::$(echo ${{ steps.git.outputs.TAGS }} | grep -q ${{ steps.package.outputs.VERSION }})"
+        id: version
 
-      - name: Create version tag if it doesn't exist
-        if: ${{ !steps.is_version_tagged.outputs.BOOL}}
-        run: echo "I would have tagged this repo"
+      - name: Tag repo at discovered package version
+        if: ${{ !steps.version.outputs.IS_TAGGED }}
+        run: git tag -a v${{ steps.package.outputs.VERSION }} -m "v${{ steps.package.outputs.VERSION }} [CI-tagged]"
