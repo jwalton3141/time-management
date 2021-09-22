@@ -44,7 +44,8 @@ jobs:
 
       - name: Check if tag exists for current package version
         run: |
-          echo "::set-output name=IS_TAGGED::$(echo ${{ steps.git.outputs.TAGS }} | grep -q ${{ steps.package.outputs.VERSION }})"
+          echo ${{ steps.git.outputs.TAGS }} | grep -q ${{ steps.package.outputs.VERSION }}
+          echo ::set-output name=IS_TAGGED::$?
         id: version
 
       - name: Debug is_tagged
