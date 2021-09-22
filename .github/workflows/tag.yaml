@@ -3,7 +3,7 @@ name: Tag
 on:
   workflow_run:
     workflows: ["Verify"]
-    branches: [make-dependent-flows]
+    branches: [main]
     types: [completed]
 
 jobs:
