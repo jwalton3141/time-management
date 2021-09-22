@@ -25,13 +25,15 @@ jobs:
         with:
           poetry-version: 1.1.8
 
-      - name: Get package version from pyproject.toml
+      - name: Fetch git tags
+        run: git fetch --tags --quiet
+      - name: Extract git tags
+        run: echo "::set-output name=TAGS::$(git --no-pager tag --list)"
+        id: git
+      - name: Extract package version from pyproject.toml
         working-directory: "./python_pkgs/jrtimeman"
         run: echo "::set-output name=VERSION::$(poetry version --short)"
         id: package
-      - name: Get git tags
-        run: echo "::set-output name=TAGS::$(git --no-pager tag --list)"
-        id: git
 
       - name: Display discovered package version
         run: echo ${{ steps.package.outputs.VERSION }}
