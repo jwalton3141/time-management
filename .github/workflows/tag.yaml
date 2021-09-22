@@ -1,13 +1,16 @@
 name: Tag
 
-on: 
-  push: 
-    branches: release-action
+on:
+  workflow_run:
+    workflows: ["Verify"]
+    branches: [release-action]
+    types: [completed]
 
 jobs:
-  build:
+  tag:
 
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == "success" }}
 
     steps:
       - name: Check out source repository
