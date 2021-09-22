@@ -13,8 +13,14 @@ jobs:
     steps:
       - name: Check out source repository
         uses: actions/checkout@v2
-      - name: Build and publish to pypi
-        uses: JRubics/poetry-publish@v1.8
-        working-directory: "./python_pkgs/jrtimeman"
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
         with:
-          pypi_token: ${{ secrets.PYPI_TOKEN }}
+          python-version: 3.7
+      - name: Set up poetry
+        uses: abatilo/actions-poetry@v2.0.0
+      - name: Authenticate against pypi
+        run: poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
+      - name: Build and publish
+        working-directory: "./python_pkgs/jrtimeman"
+        run: poetry publish --build
