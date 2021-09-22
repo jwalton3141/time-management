@@ -44,3 +44,14 @@ jobs:
         with:
           script: console.log(context)
 
+      - name: Tag repo at discovered package version
+        if: ${{ !steps.version.outputs.IS_TAGGED }}
+        uses: actions/github-script@v4
+        with:
+          script: |
+            github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "refs/tags/v${{ steps.package.outputs.VERSION }}",
+              sha: context.sha
+            })
