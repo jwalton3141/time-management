@@ -42,5 +42,5 @@ jobs:
         run: echo ${{ steps.is_version_tagged.outputs.BOOL }}
 
       - name: Create version tag if it doesn't exist
-        if: !steps.is_version_tagged.outputs.BOOL
+        if: ${{ !steps.is_version_tagged.outputs.BOOL}}
         run: echo "I would have tagged this repo"
