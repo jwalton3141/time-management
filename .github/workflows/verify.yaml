@@ -1,4 +1,4 @@
-name: Python package
+name: Package checks
 
 on: 
   push: 
@@ -10,7 +10,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    name: Lint
+    name: Verify
     if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
     strategy:
       fail-fast: false

@@ -1,0 +1,42 @@
+name: Tag repo
+
+on: 
+  push: 
+    branches: main
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v2
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Set up poetry
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: 1.0
+
+      - name: Get version from pyproject.toml
+        working-directory: "./python_pkgs/jrtimeman"
+        run: echo "::set-output name=VERSION::$(poetry version --short)"
+        id: version
+      - name: Get git tags
+        run:  echo "::set-output name=TAGS::$(git --no-pager tag --list)"
+        id: tags
+
+      - name: Display discovered version
+        run: echo ${{ steps.version.outputs.VERSION }}
+      - name: Display discovered tags
+        run: echo ${{ steps.tags.outputs.TAGS }}
+
+      - name: Check if tag exists for current version
+        run: |
+          echo "::set-output name=BOOL::$(echo ${{ steps.tags.outputs.TAGS }} | grep -q ${{ steps.version.outputs.VERSION }})"
+        id: is_version_tagged
+      - name: Display whether current version is tagged
+        run: echo ${{ steps.is_version_tagged.outputs.BOOL }}
