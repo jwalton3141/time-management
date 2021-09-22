@@ -28,7 +28,7 @@ jobs:
       - name: Fetch git tags
         run: git fetch --tags --quiet
       - name: Extract git tags
-        run: echo "::set-output name=TAGS::$(git --no-pager tag --list)"
+        run: echo "::set-output name=TAGS::$(git tag | tr '\n' ' ')"
         id: git
       - name: Extract package version from pyproject.toml
         working-directory: "./python_pkgs/jrtimeman"
