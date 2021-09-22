@@ -1,4 +1,4 @@
-name: Package checks
+name: Verify
 
 on: 
   push: 
@@ -7,10 +7,9 @@ on:
     branches: main
 
 jobs:
-  build:
+  verify-package:
 
     runs-on: ubuntu-latest
-    name: Verify
     if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
     strategy:
       fail-fast: false
@@ -33,8 +32,6 @@ jobs:
 
       - name: Set up poetry
         uses: abatilo/actions-poetry@v2.0.0
-        with:
-          poetry-version: 1.0
       - name: Install jrtimeman dependencies
         working-directory: "./python_pkgs/jrtimeman"
         run: poetry install
