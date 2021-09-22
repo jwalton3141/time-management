@@ -7,19 +7,23 @@ on:
     branches: main
 
 jobs:
-  verify:
+  verify-package:
 
     runs-on: ubuntu-latest
     if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.7, 3.8, 3.9]
 
     steps:
 
       - name: Check out source repository
         uses: actions/checkout@v2
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
-          python-version: 3.7
+          python-version: ${{ matrix.python-version }}
 
       - name: Lint with flake8
         uses: py-actions/flake8@v1.1.0
