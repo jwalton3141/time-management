@@ -1,13 +1,16 @@
 name: Tag
 
 on:
-  push:
-    branches: main
+  workflow_run:
+    workflows: ["Verify"]
+    branches: [make-dependent-flows]
+    types: [completed]
 
 jobs:
   tag-repo:
 
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
 
