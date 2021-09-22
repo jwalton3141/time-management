@@ -1,7 +1,8 @@
 name: Tag
 
 on:
-  push: main
+  push:
+    branches: main
 
 jobs:
   tag-repo:
