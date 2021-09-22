@@ -39,6 +39,8 @@ jobs:
           echo "::set-output name=IS_TAGGED::$(echo ${{ steps.git.outputs.TAGS }} | grep -q ${{ steps.package.outputs.VERSION }})"
         id: version
 
-      - name: Tag repo at discovered package version
-        if: ${{ !steps.version.outputs.IS_TAGGED }}
-        run: git tag -a v${{ steps.package.outputs.VERSION }} -m "v${{ steps.package.outputs.VERSION }} [CI-tagged]"
+      - name: View context attributes
+        uses: actions/github-script@v4
+        with:
+          script: console.log(context)
+
