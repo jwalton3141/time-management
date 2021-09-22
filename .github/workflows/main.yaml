@@ -1,19 +1,43 @@
-name: flake8 Lint
+name: Python package
 
-on: [pull_request]
+on: 
+  push: 
+    branches: main
+  pull_request:
+    branches: main
 
 jobs:
-  flake8-lint:
+  build:
+
     runs-on: ubuntu-latest
     name: Lint
+    if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.7, 3.8, 3.9]
+
     steps:
+
       - name: Check out source repository
         uses: actions/checkout@v2
-      - name: Set up Python environment
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
-          python-version: "3.8"
-      - name: flake8 Lint
+          python-version: ${{ matrix.python-version }}
+
+      - name: Lint with flake8
         uses: py-actions/flake8@v1.1.0
         with:
           args: '--per-file-ignores="__init__.py:F401"'
+
+      - name: Set up poetry
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: 1.0
+      - name: Install jrtimeman dependencies
+        working-directory: "./python_pkgs/jrtimeman"
+        run: poetry install
+      - name: Run poetry tests
+        working-directory: "./python_pkgs/jrtimeman"
+        run: poetry run test

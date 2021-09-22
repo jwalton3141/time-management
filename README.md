@@ -36,3 +36,12 @@ This report summarises my working patterns over various time-periods.
 
 ![Timesheet report](/examples/timesheet-report.png?raw=true "This report uses
 my calendar to inspect my working patterns.")
+
+
+## Tests
+
+Tests can be run with
+
+```
+poetry run test
+```
